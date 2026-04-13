@@ -41,20 +41,28 @@ public class AuthTokenService : IAuthTokenService
         };
     }
 
+    public EncodedTokenPair EncodeTokenPair(TokenPair tokenPair) => new() 
+    {
+        AccessToken = EncodeAccessToken(tokenPair.AccessToken),
+        RefreshToken = EncodeRefreshToken(tokenPair.RefreshToken)
+    };
+
     public async Task<JwtSecurityToken> ParseAccessTokenAsync(string tokenString)
     {
         return await ParseToken(_accessTokenHandler, tokenString);
     }
-    public async Task<JwtSecurityToken> ParseRefreshTokenAsync(string tokenString) {
+
+    public async Task<JwtSecurityToken> ParseRefreshTokenAsync(string tokenString) 
+    {
         return await ParseToken(_refreshTokenHandler,tokenString);
     }
 
-    public string EncodeAccessToken(JwtSecurityToken token)
+    private string EncodeAccessToken(JwtSecurityToken token)
     {
         return _accessTokenHandler.WriteToken(token);
     }
 
-    public string EncodeRefreshToken(JwtSecurityToken token)
+    private string EncodeRefreshToken(JwtSecurityToken token)
     {
         return _accessTokenHandler.WriteToken(token);
     }

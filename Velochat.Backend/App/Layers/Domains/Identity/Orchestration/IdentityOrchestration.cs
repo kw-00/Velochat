@@ -4,7 +4,7 @@ using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
-namespace Velochat.Backend.App.Layers.Domains.Chat;
+namespace Velochat.Backend.App.Layers.Domains.Identity;
 
 public class IdentityOrchestration(
     IIdentityRepository identityRepository,
@@ -14,12 +14,12 @@ public class IdentityOrchestration(
 ) : IIdentityOrchestration
 {
 
-    public async Task<(CompleteIdentity Identity, TokenPair TokenPair)> RegisterAsync(string login, string password)
+    public async Task<(CompleteIdentity Identity, EncodedTokenPair EncodedTokenPair)> RegisterAsync(Credentials credentials)
     {
-        var passwordHash = passwordService.HashPassword(password);
-        var identity = new Identity
+        var passwordHash = passwordService.HashPassword(credentials.Password);
+        var identity = new Models.Identity
         {
-            Login = login,
+            Login = credentials.Login,
             PasswordHash = passwordHash
         };
 
@@ -29,10 +29,10 @@ public class IdentityOrchestration(
         return (CompleteIdentity, tokenPair);
     }
 
-    public async Task<TokenPair> LogInAsync(string login, string password)
+    public async Task<EncodedTokenPair> LogInAsync(Credentials credentials)
     {
-        var hashedPassword = passwordService.HashPassword(password);
-        var matchedIdentity = await identityRepository.GetByCredentialsAsync(login, hashedPassword) 
+        var hashedPassword = passwordService.HashPassword(credentials.Password);
+        var matchedIdentity = await identityRepository.GetByCredentialsAsync(credentials.Login, hashedPassword) 
             ?? throw new UnauthorizedException("Login and password do not match any identity.");
 
         var tokenPair = await GetTokenPairAsync(matchedIdentity.Id);
@@ -40,7 +40,7 @@ public class IdentityOrchestration(
     }
 
 
-    public async Task<TokenPair> RefreshTokenAsync(string refreshTokenString)
+    public async Task<EncodedTokenPair> RefreshTokenAsync(string refreshTokenString)
     {
         var identityId = await CheckAndHandleRefreshTokenStatus(refreshTokenString);
         return await GetTokenPairAsync(identityId);
@@ -52,7 +52,7 @@ public class IdentityOrchestration(
         await refreshTokenStateRepository.RevokeAsync(refreshTokenString);
     }
 
-    private async Task<TokenPair> GetTokenPairAsync(int identityId)
+    private async Task<EncodedTokenPair> GetTokenPairAsync(int identityId)
     {
         throw new NotImplementedException();
     }
