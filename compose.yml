@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./Velochat.Backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      DB_CONNECTION_STRING: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat"
+      JWT_SECRET: "6SecretSecretSecretSecretSecretSecret"
+      DOTNET_ENVIRONMENT: "Development"
+
+  db:
+    build:
+      context: ./Velochat.Database
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./Velochat.Database/initdb:/docker-entrypoint-initdb.d
+
+    environment:
+      POSTGRES_USER: velochat
+      POSTGRES_PASSWORD: velochat
+      POSTGRES_DB: velochat
+
+volumes:
+  pgdata:
