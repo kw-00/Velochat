@@ -12,5 +12,8 @@ public class RefreshTokenState : IModel
     public string? Status { get; set; }
 
     [MemberNotNullWhen(true, nameof(Token), nameof(Status))]
-    public bool IsInsertable => Token is not null && Status is not null;
+    public void EnsureInsertable()
+    {
+        if (Token is not null || Status is null) throw new ModelNotInsertableException();
+    }
 }

@@ -8,5 +8,8 @@ public class Invitation : IModel
     public int? InviteeId { get; set; }
 
     [MemberNotNullWhen(true, nameof(RoomId), nameof(InviteeId))]
-    public bool IsInsertable => RoomId is not null && InviteeId is not null;
+    public void EnsureInsertable()
+    {
+        if (RoomId is null || InviteeId is null) throw new ModelNotInsertableException();
+    }
 }

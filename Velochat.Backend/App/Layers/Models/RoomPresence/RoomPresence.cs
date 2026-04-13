@@ -7,6 +7,9 @@ public class RoomPresence : IModel
     public int? RoomId { get; set; }
     public int? IdentityId { get; set; }
 
-    [MemberNotNullWhen(true, nameof(RoomId), nameof(IdentityId))]
-    public bool IsInsertable => RoomId is not null && IdentityId is not null;
+    [MemberNotNull(nameof(RoomId), nameof(IdentityId))]
+    public void EnsureInsertable()
+    {
+        if (RoomId is null || IdentityId is null) throw new ModelNotInsertableException();
+    }
 }
