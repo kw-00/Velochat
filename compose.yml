@@ -11,8 +11,8 @@ services:
       - db
     environment:
       ASPNETCORE_URLS: "http://+:8080"
-      DB_CONNECTION_STRING: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat"
-      JWT_SECRET: "6SecretSecretSecretSecretSecretSecret"
+      Db__ConnectionString: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat"
+      Jwt__Secret: "6SecretSecretSecretSecretSecretSecret"
       DOTNET_ENVIRONMENT: "Development"
 
   db:

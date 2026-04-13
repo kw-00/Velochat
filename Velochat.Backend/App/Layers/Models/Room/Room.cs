@@ -8,7 +8,7 @@ public class Room : IModel
     public string? Name { get; set; }
     public int? OwnerId { get; set; }
 
-    [MemberNotNullWhen(true, nameof(Name), nameof(OwnerId))]
+    [MemberNotNull(nameof(Name), nameof(OwnerId))]
     public void EnsureInsertable()
     {
         if (Id is not null || Name is null || OwnerId is null) throw new ModelNotInsertableException();

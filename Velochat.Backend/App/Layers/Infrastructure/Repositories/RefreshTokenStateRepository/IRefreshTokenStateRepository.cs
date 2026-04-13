@@ -4,12 +4,12 @@ namespace Velochat.Backend.App.Layers.Infrastructure;
 
 public interface IRefreshTokenStateRepository
 {
-    public Task<CompleteRefreshTokenState?> GetByTokenAsync(string token);
+    Task<CompleteRefreshTokenState?> GetByTokenAsync(string token);
 
-    public Task CreateAsync(CompleteRefreshTokenState refreshTokenState);
+    Task CreateAsync(CompleteRefreshTokenState refreshTokenState);
 
-    public Task<CompleteRefreshTokenState> UpdateAsync(CompleteRefreshTokenState refreshTokenState);
+    Task UpdateAsync(CompleteRefreshTokenState refreshTokenState);
 
-    public Task RevokeAsync(string token);
-    public Task RevokeAllByIdentityIdAsync(int identityId);
+    Task RevokeAsync(string token);
+    Task RevokeAllByIdentityIdAsync(int identityId);
 }

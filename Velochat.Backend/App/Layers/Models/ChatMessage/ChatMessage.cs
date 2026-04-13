@@ -9,7 +9,7 @@ public class ChatMessage : IModel
     public int? AuthorId { get; set; }
     public string? Content { get; set; }
 
-    [MemberNotNullWhen(true, nameof(RoomId), nameof(AuthorId), nameof(Content))]
+    [MemberNotNull(nameof(RoomId), nameof(AuthorId), nameof(Content))]
     public void EnsureInsertable() 
         => Id is null && RoomId is not null && AuthorId is not null && Content is not null;
 }

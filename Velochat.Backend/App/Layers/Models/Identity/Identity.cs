@@ -8,7 +8,7 @@ public class Identity : IModel
     public string? Login { get; set; }
     public string? PasswordHash { get; set; }
 
-    [MemberNotNullWhen(true, nameof(Login), nameof(PasswordHash))]
+    [MemberNotNull(nameof(Login), nameof(PasswordHash))]
     public void EnsureInsertable()
     {
         if (Id is not null || Login is null || PasswordHash is null) throw new ModelNotInsertableException();

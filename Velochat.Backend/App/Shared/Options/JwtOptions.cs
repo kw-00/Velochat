@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Options;
+namespace Velochat.Backend.App.Shared.Options;
 
 public class JwtOptions
 {
