@@ -9,5 +9,5 @@ public class Room : IModel
     public int? OwnerId { get; set; }
 
     [MemberNotNullWhen(true, nameof(Name), nameof(OwnerId))]
-    public bool CanBePeristed() => Id is null && Name is not null && OwnerId is not null;
+    public bool IsInsertable => Id is null && Name is not null && OwnerId is not null;
 }

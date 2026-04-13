@@ -1,7 +1,7 @@
 namespace Velochat.Backend.App.Layers.Models;
 
 
-public class PersistedIdentity : IPersistedModel<Identity>
+public class CompleteIdentity : ICompleteModel
 {
     public required int Id { get; init; }
     public required string Login { get; init; }

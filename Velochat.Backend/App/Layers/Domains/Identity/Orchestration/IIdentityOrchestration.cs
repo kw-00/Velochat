@@ -6,7 +6,7 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public interface IIdentityOrchestration
 {
-    Task<(PersistedIdentity Identity, TokenPair TokenPair)> RegisterAsync(string login, string password);
+    Task<(CompleteIdentity Identity, TokenPair TokenPair)> RegisterAsync(string login, string password);
 
     Task<TokenPair> LogInAsync(string login, string password);
 

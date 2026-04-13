@@ -4,7 +4,7 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public interface IChatOrchestration
 {
-    Task<PersistedRoom> CreateRoomAsync(int userId, string name);
+    Task<CompleteRoom> CreateRoomAsync(int userId, string name);
 }
 
    

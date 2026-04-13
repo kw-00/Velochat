@@ -4,7 +4,7 @@ namespace Velochat.Backend.App.Layers.Infrastructure;
 
 public interface IIdentityRepository
 {
-    Task<PersistedIdentity?> GetByIdAsync(int id);
-    Task<PersistedIdentity?> GetByCredentialsAsync(string login, string passwordHash);
-    Task<PersistedIdentity> CreateAsync(Identity identity);
+    Task<CompleteIdentity?> GetByIdAsync(int id);
+    Task<CompleteIdentity?> GetByCredentialsAsync(string login, string passwordHash);
+    Task<CompleteIdentity> CreateAsync(Identity identity);
 }

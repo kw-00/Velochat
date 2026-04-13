@@ -8,5 +8,5 @@ public class RoomPresence : IModel
     public int? IdentityId { get; set; }
 
     [MemberNotNullWhen(true, nameof(RoomId), nameof(IdentityId))]
-    public bool CanBePeristed() => RoomId is not null && IdentityId is not null;
+    public bool IsInsertable => RoomId is not null && IdentityId is not null;
 }

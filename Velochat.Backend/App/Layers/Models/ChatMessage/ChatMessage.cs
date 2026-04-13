@@ -10,6 +10,6 @@ public class ChatMessage : IModel
     public string? Content { get; set; }
 
     [MemberNotNullWhen(true, nameof(RoomId), nameof(AuthorId), nameof(Content))]
-    public bool CanBePeristed() 
+    public bool IsInsertable 
         => Id is null && RoomId is not null && AuthorId is not null && Content is not null;
 }

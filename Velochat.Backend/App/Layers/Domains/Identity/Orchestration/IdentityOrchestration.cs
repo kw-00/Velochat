@@ -14,7 +14,7 @@ public class IdentityOrchestration(
 ) : IIdentityOrchestration
 {
 
-    public async Task<(PersistedIdentity Identity, TokenPair TokenPair)> RegisterAsync(string login, string password)
+    public async Task<(CompleteIdentity Identity, TokenPair TokenPair)> RegisterAsync(string login, string password)
     {
         var passwordHash = passwordService.HashPassword(password);
         var identity = new Identity
@@ -23,10 +23,10 @@ public class IdentityOrchestration(
             PasswordHash = passwordHash
         };
 
-        var persistedIdentity = await identityRepository.CreateAsync(identity);
+        var CompleteIdentity = await identityRepository.CreateAsync(identity);
 
-        var tokenPair = await GetTokenPairAsync(persistedIdentity.Id);
-        return (persistedIdentity, tokenPair);
+        var tokenPair = await GetTokenPairAsync(CompleteIdentity.Id);
+        return (CompleteIdentity, tokenPair);
     }
 
     public async Task<TokenPair> LogInAsync(string login, string password)
@@ -64,13 +64,13 @@ public class IdentityOrchestration(
         var refreshTokenState = await refreshTokenStateRepository.GetByTokenAsync(refreshTokenString)
             ?? throw new UnauthorizedException("Invalid refresh token.");
 
-        if (refreshTokenState.State == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
-        if (refreshTokenState.State == RefreshTokenState.Used)
+        if (refreshTokenState.Status == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
+        if (refreshTokenState.Status == RefreshTokenState.Used)
         {
            await refreshTokenStateRepository.RevokeAllByIdentityIdAsync(identityId);
            throw new UnauthorizedException("Refresh token has been used. Revoking all tokens for identity.");
         }
-        if (refreshTokenState.State == RefreshTokenState.Active) return identityId;
+        if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;
         throw new UnauthorizedException("Refresh token status is not valid.");
     }
 }

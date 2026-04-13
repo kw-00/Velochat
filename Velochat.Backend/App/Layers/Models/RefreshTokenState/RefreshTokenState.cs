@@ -12,5 +12,5 @@ public class RefreshTokenState : IModel
     public string? Status { get; set; }
 
     [MemberNotNullWhen(true, nameof(Token), nameof(Status))]
-    public bool CanBePeristed() => Token is not null && Status is not null;
+    public bool IsInsertable => Token is not null && Status is not null;
 }

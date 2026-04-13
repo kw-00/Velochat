@@ -9,5 +9,5 @@ public class Identity : IModel
     public string? PasswordHash { get; set; }
 
     [MemberNotNullWhen(true, nameof(Login), nameof(PasswordHash))]
-    public bool CanBePeristed() => Id is null && Login is not null && PasswordHash is not null;
+    public bool IsInsertable => Id is null && Login is not null && PasswordHash is not null;
 }
