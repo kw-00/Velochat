@@ -8,7 +8,7 @@ public interface IRoomRepository
 
     Task DeleteAsync(int roomId);
 
-    Task<IReadOnlyList<CompleteRoom>> GetAllForMemberIdAsync(int identityId);
+    Task<IReadOnlyList<CompleteRoom>> GetAllByMemberIdAsync(int identityId);
 
-    Task<IReadOnlyList<CompleteRoom>> GetAllForInviteeIdAsync(int identityId);
+    Task<IReadOnlyList<CompleteRoom>> GetAllByInviteeIdAsync(int identityId);
 }
