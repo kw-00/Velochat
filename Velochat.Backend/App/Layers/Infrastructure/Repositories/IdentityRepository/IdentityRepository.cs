@@ -3,7 +3,7 @@ using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
 
-public class IdentityRepository(NpgsqlDataSource dataSource)
+public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityRepository
 {
     public async Task<CompleteIdentity?> GetByIdAsync(int id)
     {

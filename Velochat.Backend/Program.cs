@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Velochat.Backend.App.Layers.Domains.Identity;
@@ -16,19 +18,26 @@ builder.Services.AddSingleton(sp =>
 {
     var connectionString = sp
         .GetRequiredService<IOptions<DbOptions>>()
-        .Value.ConnectionString;
-    return new NpgsqlConnection(connectionString);
+            .Value
+            .ConnectionString;
+    return NpgsqlDataSource.Create(connectionString);
 });
 
 // Repositories
-
+builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
+builder.Services.AddScoped<IRefreshTokenStateRepository, RefreshTokenStateRepository>();
 // Services
 builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 // Orchestration
 builder.Services.AddScoped<IIdentityOrchestration, IdentityOrchestration>();
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddAuthentication("Custom")
+    .AddScheme<AuthenticationSchemeOptions, AccessTokenAuthHandler>("Custom", null);
 
 var app = builder.Build();
 

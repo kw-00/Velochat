@@ -10,6 +10,9 @@ public class ChatMessage : IModel
     public string? Content { get; set; }
 
     [MemberNotNull(nameof(RoomId), nameof(AuthorId), nameof(Content))]
-    public void EnsureInsertable() 
-        => Id is null && RoomId is not null && AuthorId is not null && Content is not null;
+    public void EnsureInsertable()
+    {
+        if (Id is not null || RoomId is null || AuthorId is null || Content is null) 
+            throw new ModelNotInsertableException();
+    }
 }

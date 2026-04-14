@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Shared.Options;
@@ -13,9 +14,9 @@ public class AuthTokenService : IAuthTokenService
     private readonly JwtSecurityTokenHandler _accessTokenHandler = new();
     private readonly JwtSecurityTokenHandler _refreshTokenHandler = new();
 
-    public AuthTokenService(JwtOptions jwtOptions)
+    public AuthTokenService(IOptions<JwtOptions> jwtOptions)
     {
-        _jwtOptions = jwtOptions;
+        _jwtOptions = jwtOptions.Value;
         _accessTokenHandler.TokenLifetimeInMinutes = (int)_jwtOptions.AccessTokenLifetimeMinutes;
         _refreshTokenHandler.TokenLifetimeInMinutes = (int)(_jwtOptions.RefreshTokenLifetimeHours * 60);
 

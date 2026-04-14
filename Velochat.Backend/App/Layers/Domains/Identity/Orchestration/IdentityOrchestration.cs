@@ -59,18 +59,24 @@ public class IdentityOrchestration(
 
     private async Task<int> CheckAndHandleRefreshTokenStatus(string refreshTokenString)
     {
-        var refreshToken = await authTokenService.ParseRefreshTokenAsync(refreshTokenString);
-        var identityId = int.Parse(refreshToken.Subject);
-        var refreshTokenState = await refreshTokenStateRepository.GetByTokenAsync(refreshTokenString)
-            ?? throw new UnauthorizedException("Invalid refresh token.");
+        try {
+            var refreshToken = await authTokenService.ParseRefreshTokenAsync(refreshTokenString);
+            var identityId = int.Parse(refreshToken.Subject);
+            var refreshTokenState = await refreshTokenStateRepository.GetByTokenAsync(refreshTokenString)
+                ?? throw new UnauthorizedException("Invalid refresh token.");
 
-        if (refreshTokenState.Status == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
-        if (refreshTokenState.Status == RefreshTokenState.Used)
-        {
-           await refreshTokenStateRepository.RevokeAllByIdentityIdAsync(identityId);
-           throw new UnauthorizedException("Refresh token has been used. Revoking all tokens for identity.");
+            if (refreshTokenState.Status == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
+            if (refreshTokenState.Status == RefreshTokenState.Used)
+            {
+            await refreshTokenStateRepository.RevokeAllByIdentityIdAsync(identityId);
+            throw new UnauthorizedException("Refresh token has been used. Revoking all tokens for identity.");
+            }
+            if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;
+            throw new UnauthorizedException("Refresh token status is not valid.");
         }
-        if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;
-        throw new UnauthorizedException("Refresh token status is not valid.");
+        catch (Exception ex)
+        {
+            throw new UnauthorizedException($"Invalid refresh token. {ex.Message}");
+        }
     }
 }
