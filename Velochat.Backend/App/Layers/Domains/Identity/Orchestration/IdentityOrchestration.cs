@@ -1,5 +1,5 @@
 
-using Velochat.Backend.App.Exceptions;
+using Velochat.Backend.App.Exceptions.StatusExceptions;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
@@ -54,7 +54,8 @@ public class IdentityOrchestration(
 
     private async Task<EncodedTokenPair> GetTokenPairAsync(int identityId)
     {
-        throw new NotImplementedException();
+        var tokens = authTokenService.GenerateTokenPair(identityId);
+        return authTokenService.EncodeTokenPair(tokens);
     }
 
     private async Task<int> CheckAndHandleRefreshTokenStatus(string refreshTokenString)

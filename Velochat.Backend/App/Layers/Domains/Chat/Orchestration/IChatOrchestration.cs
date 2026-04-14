@@ -21,7 +21,6 @@ public interface IChatOrchestration
     Task<CompleteChatMessage> CreateChatMessageAsync(int identityId, int roomId, string content);
 
     Task<IReadOnlyList<CompleteChatMessage>> GetChatMessagesAsync(int identityId, int roomId);
-
 }
 
    

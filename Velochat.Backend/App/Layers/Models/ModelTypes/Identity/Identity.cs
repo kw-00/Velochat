@@ -2,8 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Velochat.Backend.App.Layers.Models;
 
-public class Identity : IModel
+public class Identity : IMalleableModel
 {
+    [PrimaryKey]
     public int? Id { get; set; }
     public string? Login { get; set; }
     public string? PasswordHash { get; set; }

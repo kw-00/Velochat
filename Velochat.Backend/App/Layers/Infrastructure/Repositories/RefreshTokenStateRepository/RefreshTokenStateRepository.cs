@@ -25,8 +25,9 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
         return null;
     }
 
-    public async Task CreateAsync(CompleteRefreshTokenState refreshTokenState)
+    public async Task CreateAsync(RefreshTokenState refreshTokenState)
     {
+        refreshTokenState.EnsureInsertable();
         var query = dataSource.CreateCommand(@"
             INSERT INTO refresh_token_state (token, status) 
             VALUES (@token, @status);

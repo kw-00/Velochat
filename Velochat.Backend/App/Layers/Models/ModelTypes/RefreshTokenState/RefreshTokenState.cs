@@ -3,11 +3,13 @@ using System.Runtime.ConstrainedExecution;
 
 namespace Velochat.Backend.App.Layers.Models;
 
-public class RefreshTokenState : IModel
+public class RefreshTokenState : IMalleableModel
 {
     public static readonly string Active = "active";
     public static readonly string Used = "used";
     public static readonly string Revoked = "revoked";
+
+    [PrimaryKey]
     public string? Token { get; set; }
     public string? Status { get; set; }
 
@@ -15,5 +17,11 @@ public class RefreshTokenState : IModel
     public void EnsureInsertable()
     {
         if (Token is not null || Status is null) throw new ModelNotInsertableException();
+    }
+
+    [MemberNotNull(nameof(Token))]
+    public void EnsureIdentifiable()
+    {
+        if (Token is null) throw new ModelNotIdentifiableException();
     }
 }

@@ -1,6 +1,8 @@
 namespace Velochat.Backend.App.Layers.Models;
 
-public interface IModel
+public interface IMalleableModel : IModel
 {
     void EnsureInsertable();
+
+    void EnsureIdentifiable();
 }

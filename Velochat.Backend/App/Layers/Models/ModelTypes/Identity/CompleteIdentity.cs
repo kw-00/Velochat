@@ -3,6 +3,7 @@ namespace Velochat.Backend.App.Layers.Models;
 
 public class CompleteIdentity : ICompleteModel
 {
+    [PrimaryKey]
     public required int Id { get; init; }
     public required string Login { get; init; }
 

@@ -1,4 +1,5 @@
 using Npgsql;
+using Velochat.Backend.App.Exceptions.RepositoryExceptions;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
@@ -43,21 +44,31 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
     }
     public async Task<CompleteIdentity> CreateAsync(Identity identity)
     {
-        identity.EnsureInsertable();
-        var query = dataSource.CreateCommand(@"
-            INSERT INTO identity (login, password_hash) 
-            VALUES (@login, @passwordHash) 
-            RETURNING id, login;
-        ");
-        query.Parameters.AddWithValue("login", identity.Login);
-        query.Parameters.AddWithValue("passwordHash", identity.PasswordHash);
+        try
+        { 
+            identity.EnsureInsertable();
+            var query = dataSource.CreateCommand(@"
+                INSERT INTO identity (login, password_hash) 
+                VALUES (@login, @passwordHash) 
+                RETURNING id, login;
+            ");
+            query.Parameters.AddWithValue("login", identity.Login);
+            query.Parameters.AddWithValue("passwordHash", identity.PasswordHash);
 
-        await using var reader = await query.ExecuteReaderAsync();
-        await reader.ReadAsync();
-        return new CompleteIdentity
+            await using var reader = await query.ExecuteReaderAsync();
+            await reader.ReadAsync();
+            return new CompleteIdentity
+            {
+                Id = reader.GetInt32(0),
+                Login = reader.GetString(1),
+            };
+        }
+        catch (NpgsqlException ex)
         {
-            Id = reader.GetInt32(0),
-            Login = reader.GetString(1),
-        };
+            if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                throw new DuplicatePrimaryKeyException<Identity>(identity);
+            
+            throw;
+        }
     }
 }
