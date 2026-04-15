@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
-
+using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Velochat.Backend.App.Layers.Domains.Identity;
 using Velochat.Backend.App.Layers.Infrastructure;
+using Velochat.Backend.App.Shared.Metrics;
 using Velochat.Backend.App.Shared.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,12 @@ builder.Services.AddControllers();
 builder.Services
     .AddAuthentication("Custom")
     .AddScheme<AuthenticationSchemeOptions, AccessTokenAuthHandler>("Custom", null);
+
+// Telemetry
+builder.Services.AddMetrics(conf =>
+{
+    conf.EnableMetrics(VelochatMetrics.MetricsName);
+});
 
 var app = builder.Build();
 

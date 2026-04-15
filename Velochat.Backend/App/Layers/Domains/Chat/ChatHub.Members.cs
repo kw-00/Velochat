@@ -1,6 +1,7 @@
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 using Velochat.Backend.App.Shared.Exceptions;
+using Velochat.Backend.App.Shared.Metrics;
 
 namespace Velochat.Backend.App.Layers.Domains.Chat;
 
@@ -25,9 +26,10 @@ public partial class ChatHub
                 InviteeId = inviteeIdentityId
             });
         }
-        catch (DuplicatePrimaryKeyException<Invitation> ex)
+        catch (DuplicatePrimaryKeyException<Invitation>)
         {
-            throw new ConflictException(ex.Message);
+            // User was already invited
+            VelochatMetrics.Increment(VelochatMetrics.DuplicateInvitation);
         }
         catch (RecordNotFoundException<Models.Identity> ex)
         {
