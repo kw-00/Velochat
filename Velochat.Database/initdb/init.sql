@@ -34,7 +34,8 @@ CREATE TABLE chat_messages (
 
 CREATE TABLE refresh_token_states (
     token TEXT PRIMARY KEY,
-    status TEXT NOT NULL CHECK (status IN ('active', 'used', 'revoked')),
+    identity_id INT NOT NULL,
+    status TEXT NOT NULL
 );
 
 ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_room_id
@@ -66,5 +67,14 @@ ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_room_id
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_author_id
     FOREIGN KEY (author_id) REFERENCES identities (id)
 ;
+
+ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_identity_id
+    FOREIGN KEY (identity_id) REFERENCES identities (id)
+;
+
+ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_status_check
+    CHECK (status IN ('active', 'used', 'revoked'))
+;
+    
 
 RESET search_path;

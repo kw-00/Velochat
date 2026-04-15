@@ -11,7 +11,7 @@ public class ChatMessageRepository(NpgsqlDataSource dataSource)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, room_id, author_id, content 
-            FROM chat_message 
+            FROM chat_messages 
             WHERE room_id = @roomId 
             ORDER BY id DESC 
             LIMIT @limit;
@@ -40,7 +40,7 @@ public class ChatMessageRepository(NpgsqlDataSource dataSource)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, room_id, author_id, content 
-            FROM chat_message 
+            FROM chat_messages 
             WHERE room_id = @roomId AND id > @after 
             ORDER BY id ASC 
             LIMIT @limit;
@@ -71,7 +71,7 @@ public class ChatMessageRepository(NpgsqlDataSource dataSource)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, room_id, author_id, content 
-            FROM chat_message 
+            FROM chat_messages 
             WHERE room_id = @roomId AND id < @before 
             ORDER BY id DESC 
             LIMIT @limit;
@@ -98,7 +98,7 @@ public class ChatMessageRepository(NpgsqlDataSource dataSource)
     {
         message.EnsureInsertable();
         var query = dataSource.CreateCommand(@"
-            INSERT INTO chat_message (room_id, author_id, content) 
+            INSERT INTO chat_messages (room_id, author_id, content) 
             VALUES (@roomId, @authorId, @content) 
             RETURNING id, room_id, author_id, content;
         ");

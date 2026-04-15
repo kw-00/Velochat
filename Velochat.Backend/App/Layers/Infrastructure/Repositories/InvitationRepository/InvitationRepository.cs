@@ -13,7 +13,7 @@ public class InvitationRepository(NpgsqlDataSource dataSource) : IInvitationRepo
         invitation.EnsureIdentifiable();
         var query = dataSource.CreateCommand(@"
             SELECT room_id, invitee_id 
-            FROM invitation 
+            FROM invitations
             WHERE room_id = @roomId AND invitee_id = @inviteeId;
         ");
         query.Parameters.AddWithValue("roomId", invitation.RoomId);
@@ -55,7 +55,7 @@ public class InvitationRepository(NpgsqlDataSource dataSource) : IInvitationRepo
     {
         invitation.EnsureInsertable();
         var query = dataSource.CreateCommand(@"
-            INSERT INTO invitation (room_id, invitee_id) 
+            INSERT INTO invitations (room_id, invitee_id) 
             VALUES (@roomId, @inviteeId) 
             RETURNING room_id, invitee_id;
         ");
@@ -75,11 +75,9 @@ public class InvitationRepository(NpgsqlDataSource dataSource) : IInvitationRepo
             throw new MissingInsertionReturnValue();
         }
         catch (PostgresException ex)
+        when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
-                throw new DuplicatePrimaryKeyException<Invitation>(invitation);
-            
-            throw;
+            throw new DuplicatePrimaryKeyException<Invitation>(invitation);
         }
     }
 
@@ -87,7 +85,7 @@ public class InvitationRepository(NpgsqlDataSource dataSource) : IInvitationRepo
     {
         invitation.EnsureIdentifiable();
         var query = dataSource.CreateCommand(@"
-            DELETE FROM invitation 
+            DELETE FROM invitations 
             WHERE room_id = @roomId AND invitee_id = @inviteeId;
         ");
         query.Parameters.AddWithValue("roomId", invitation.RoomId);

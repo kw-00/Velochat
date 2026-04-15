@@ -13,7 +13,7 @@ public class RoomPresenceRepository(NpgsqlDataSource dataSource) : IRoomPresence
         roomPresence.EnsureIdentifiable();
         var query = dataSource.CreateCommand(@"
             SELECT room_id, member_id 
-            FROM room_presence 
+            FROM room_presences 
             WHERE room_id = @roomId AND member_id = @memberId;
         ");
         query.Parameters.AddWithValue("roomId", roomPresence.RoomId);
@@ -35,7 +35,7 @@ public class RoomPresenceRepository(NpgsqlDataSource dataSource) : IRoomPresence
     {
         roomPresence.EnsureInsertable();
         var query = dataSource.CreateCommand(@"
-            INSERT INTO room_presence (room_id, member_id) 
+            INSERT INTO room_presences (room_id, member_id) 
             VALUES (@roomId, @memberId) 
             RETURNING room_id, member_id;
         ");
@@ -55,10 +55,9 @@ public class RoomPresenceRepository(NpgsqlDataSource dataSource) : IRoomPresence
             throw new MissingInsertionReturnValue();
         }
         catch (PostgresException ex)
+        when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
-                throw new DuplicatePrimaryKeyException<RoomPresence>(roomPresence);
-            throw;
+            throw new DuplicatePrimaryKeyException<RoomPresence>(roomPresence);
         }
 
     }
@@ -67,7 +66,7 @@ public class RoomPresenceRepository(NpgsqlDataSource dataSource) : IRoomPresence
     {
         roomPresence.EnsureIdentifiable();
         var query = dataSource.CreateCommand(@"
-            DELETE FROM room_presence 
+            DELETE FROM room_presences 
             WHERE room_id = @roomId AND member_id = @memberId;
         ");
         query.Parameters.AddWithValue("roomId", roomPresence.RoomId);

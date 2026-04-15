@@ -9,7 +9,7 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
     public async Task<CompleteIdentity?> GetByIdAsync(int id)
     {
         var query = dataSource.CreateCommand(@"
-            SELECT id, login FROM identity WHERE id = @id;
+            SELECT id, login FROM identities WHERE id = @id;
         ");
         query.Parameters.AddWithValue("id", id);
         await using var reader = await query.ExecuteReaderAsync();
@@ -27,7 +27,7 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
     )
     {
         var query = dataSource.CreateCommand(@"
-            SELECT id, login FROM identity 
+            SELECT id, login FROM identities
             WHERE login = @login AND password_hash = @passwordHash;
         ");
         query.Parameters.AddWithValue("login", login);
@@ -48,7 +48,7 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
         { 
             identity.EnsureInsertable();
             var query = dataSource.CreateCommand(@"
-                INSERT INTO identity (login, password_hash) 
+                INSERT INTO identities (login, password_hash) 
                 VALUES (@login, @passwordHash) 
                 RETURNING id, login;
             ");
@@ -64,11 +64,9 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
             };
         }
         catch (PostgresException ex)
+        when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
-                throw new DuplicatePrimaryKeyException<Identity>(identity);
-            
-            throw;
+            throw new DuplicatePrimaryKeyException<Identity>(identity);
         }
     }
 }
