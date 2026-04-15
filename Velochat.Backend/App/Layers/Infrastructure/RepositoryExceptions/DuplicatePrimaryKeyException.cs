@@ -30,7 +30,7 @@ public class DuplicatePrimaryKeyException<T>(T model)
                     return $"{p.Key} of {formattedValue}";
                 })
             )
-        ).Append(" ");
+        ).Append(' ');
 
         messageBuilder.Append(
             string.Join(

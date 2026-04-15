@@ -12,7 +12,7 @@ public interface IChatMessageRepository
     /// <param name="roomId"></param>
     /// <param name="limit"></param>
     /// <returns>The chat messages retrieved.</returns>
-    /// <exception cref="RecordNotFoundException{Room}">
+    /// <exception cref="IdentifierNotFoundException{Room}">
     /// Thrown when the room ID is not found.
     /// </exception>
     Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdAsync(int roomId, int limit);
@@ -26,9 +26,6 @@ public interface IChatMessageRepository
     /// <param name="after"></param>
     /// <param name="limit"></param>
     /// <returns>The chat messages retrieved.</returns>
-    /// <exception cref="RecordNotFoundException{Room}">
-    /// Thrown when the room ID is not found.
-    /// </exception>
     Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdAfterAsync(
         int roomId, int after, int limit
     );
@@ -43,9 +40,6 @@ public interface IChatMessageRepository
     /// <param name="before"></param>
     /// <param name="limit"></param>
     /// <returns>The chat messages retrieved.</returns>
-    /// <exception cref="RecordNotFoundException{Room}">
-    /// Thrown when the room ID is not found.
-    /// </exception>
     Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdBeforeAsync(
         int roomId, int before, int limit
     );
@@ -61,10 +55,10 @@ public interface IChatMessageRepository
     /// <exception cref="ModelNotInsertableException">
     /// Thrown when the chat message to be inserted is not insertable.
     /// </exception>
-    /// <exception cref="RecordNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{Identity}">
     /// Thrown when the author ID is not found.
     /// </exception>
-    /// <exception cref="RecordNotFoundException{Room}">
+    /// <exception cref="IdentifierNotFoundException{Room}">
     /// Thrown when the room ID is not found.
     /// </exception>
     Task<CompleteChatMessage> CreateAsync(ChatMessage message);

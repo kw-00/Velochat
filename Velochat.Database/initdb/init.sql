@@ -9,8 +9,8 @@ CREATE TABLE identities (
 
 CREATE TABLE room_presences (
     room_id INT NOT NULL,
-    identity_id INT NOT NULL,
-    CONSTRAINT pk_room_presences PRIMARY KEY (room_id, identity_id)
+    member_id INT NOT NULL,
+    CONSTRAINT pk_room_presences PRIMARY KEY (room_id, member_id)
 );
 
 CREATE TABLE invitations (
@@ -41,8 +41,8 @@ ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_room_id
     FOREIGN KEY (room_id) REFERENCES rooms (id)
 ;
 
-ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_identity_id
-    FOREIGN KEY (identity_id) REFERENCES identities (id)
+ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_member_id
+    FOREIGN KEY (member_id) REFERENCES identities (id)
 ;
 
 ALTER TABLE invitations ADD CONSTRAINT fk_invitations_room_id

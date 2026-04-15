@@ -28,7 +28,7 @@ public interface IInvitationRepository
     /// <returns>
     /// A list of complete models of the invitations.
     /// </returns>
-    /// <exception cref="RecordNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{Identity}">
     /// Thrown when identity with the given ID does not exist.
     /// </exception>
     Task<List<CompleteInvitation>> GetAsync(int identityId);
@@ -42,10 +42,10 @@ public interface IInvitationRepository
     /// Thrown when an invitation with the same primary key already exists.
     /// The primary key in this case is RoomId and InviteeId.
     /// </exception>
-    /// <exception cref="RecordNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{Identity}">
     /// Thrown when identity (invitee) with the given ID does not exist.
     /// </exception>
-    /// <exception cref="RecordNotFoundException{Room}">
+    /// <exception cref="IdentifierNotFoundException{Room}">
     /// Thrown when room with the given ID does not exist.
     /// </exception>
     Task<CompleteInvitation> CreateAsync(Invitation invitation);

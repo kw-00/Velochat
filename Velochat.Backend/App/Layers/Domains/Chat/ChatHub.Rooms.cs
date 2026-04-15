@@ -52,7 +52,7 @@ public partial class ChatHub
             await roomPresenceRepository.CreateAsync(new RoomPresence
             {
                 RoomId = invitation.RoomId,
-                IdentityId = invitation.InviteeId
+                MemberId = invitation.InviteeId
             });
             var room = await roomRepository.GetByIdAsync(roomId);
             return room
@@ -64,13 +64,13 @@ public partial class ChatHub
         {
             throw new ConflictException(ex.Message);
         }
-        catch (RecordNotFoundException<Room> ex)
+        catch (IdentifierNotFoundException<Room> ex)
         {
             throw new RaceConditionException(
                 $"Room disappeared mid-operation. {ex.Message}"
             );
         }
-        catch (RecordNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.Identity> ex)
         {
             throw new RaceConditionException(
                 $"Identity disappeared mid-operation. {ex.Message}"

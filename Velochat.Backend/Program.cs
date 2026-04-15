@@ -38,8 +38,8 @@ builder.Services.AddScoped<IIdentityOrchestration, IdentityOrchestration>();
 builder.Services.AddControllers();
 
 builder.Services
-    .AddAuthentication("Custom")
-    .AddScheme<AuthenticationSchemeOptions, AccessTokenAuthHandler>("Custom", null);
+    .AddAuthentication("AccessToken")
+    .AddScheme<AuthenticationSchemeOptions, AccessTokenAuthHandler>("AccessToken", null);
 
 // Telemetry
 builder.Services.AddMetrics(conf =>

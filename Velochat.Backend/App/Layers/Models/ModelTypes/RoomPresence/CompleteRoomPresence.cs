@@ -5,5 +5,5 @@ public class CompleteRoomPresence : ICompleteModel
     [PrimaryKey]
     public required int RoomId { get; init; }
     [PrimaryKey]
-    public required int IdentityId { get; init; }
+    public required int MemberId { get; init; }
 }

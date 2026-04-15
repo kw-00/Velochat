@@ -23,7 +23,7 @@ public partial class ChatHub
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
         {
             RoomId = roomId,
-            IdentityId = identityId
+            MemberId = identityId
         })
         ?? throw new ForbiddenException("Client is not in the room.");
     }

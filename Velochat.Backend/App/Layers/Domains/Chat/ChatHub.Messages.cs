@@ -22,11 +22,11 @@ public partial class ChatHub
                 Content = content
             });
         }
-        catch (RecordNotFoundException<Room> ex)
+        catch (IdentifierNotFoundException<Room> ex)
         {
             throw new NotFoundException(ex.Message);
         }
-        catch (RecordNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.Identity> ex)
         {
             throw new NotFoundException(ex.Message);
         }
@@ -40,7 +40,7 @@ public partial class ChatHub
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
         {
             RoomId = roomId,
-            IdentityId = identityId
+            MemberId = identityId
         })
         ?? throw new ForbiddenException("Client is not in the room.");
 

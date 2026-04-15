@@ -45,6 +45,6 @@ public interface IRefreshTokenStateRepository
     /// </summary>
     /// <param name="identityId"></param>
     /// <returns></returns>
-    /// <exception cref="RecordNotFoundException{Identity}"></exception>
+    /// <exception cref="IdentifierNotFoundException{Identity}"></exception>
     Task RevokeByIdentityIdAsync(int identityId);
 }

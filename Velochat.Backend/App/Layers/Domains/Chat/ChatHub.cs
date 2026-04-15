@@ -38,7 +38,7 @@ public partial class ChatHub(
                 InvitedToRoomIds = await roomRepository.GetByInviteeIdAsync(identityId)
             };
         }
-        catch (RecordNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.Identity> ex)
         {
             throw new NotFoundException(ex.Message);
         }

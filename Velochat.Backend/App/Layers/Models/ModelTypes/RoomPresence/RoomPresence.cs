@@ -7,17 +7,17 @@ public class RoomPresence : IMalleableModel
     [PrimaryKey]
     public int? RoomId { get; set; }
     [PrimaryKey]
-    public int? IdentityId { get; set; }
+    public int? MemberId { get; set; }
 
-    [MemberNotNull(nameof(RoomId), nameof(IdentityId))]
+    [MemberNotNull(nameof(RoomId), nameof(MemberId))]
     public void EnsureInsertable()
     {
-        if (RoomId is null || IdentityId is null) throw new ModelNotInsertableException();
+        if (RoomId is null || MemberId is null) throw new ModelNotInsertableException();
     }
 
-    [MemberNotNull(nameof(RoomId), nameof(IdentityId))]
+    [MemberNotNull(nameof(RoomId), nameof(MemberId))]
     public void EnsureIdentifiable()
     {
-        if (RoomId is null || IdentityId is null) throw new ModelNotIdentifiableException();
+        if (RoomId is null || MemberId is null) throw new ModelNotIdentifiableException();
     }
 }

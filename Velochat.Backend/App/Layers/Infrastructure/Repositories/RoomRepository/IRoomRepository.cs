@@ -23,7 +23,7 @@ public interface IRoomRepository
     /// for whom the rooms are to be retrieved.
     /// </param>
     /// <returns>Complete models of the rooms.</returns>
-    /// <exception cref="RecordNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{Identity}">
     /// When no identity with matching ID is found.
     /// </exception>
     Task<IReadOnlyList<CompleteRoom>> GetByMemberIdAsync(int identityId);
@@ -36,7 +36,7 @@ public interface IRoomRepository
     /// for whom the rooms are to be retrieved.
     /// </param>
     /// <returns>Complete models of the rooms.</returns>
-    /// <exception cref="RecordNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{Identity}">
     /// When no identity with matching ID is found.
     /// </exception>
     Task<IReadOnlyList<CompleteRoom>> GetByInviteeIdAsync(int identityId);

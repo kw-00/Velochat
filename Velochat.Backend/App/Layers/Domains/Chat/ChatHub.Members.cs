@@ -31,13 +31,13 @@ public partial class ChatHub
             // User was already invited
             VelochatMetrics.Increment(VelochatMetrics.DuplicateInvitation);
         }
-        catch (RecordNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.Identity> ex)
         {
             throw new RaceConditionException(
                 $"Client or invitee ID disappeared mid-operation. {ex.Message}"
             );
         }
-        catch (RecordNotFoundException<Room> ex)
+        catch (IdentifierNotFoundException<Room> ex)
         {
             throw new RaceConditionException(
                 $"Room disappeared mid-operation. {ex.Message}"
@@ -77,7 +77,7 @@ public partial class ChatHub
         await roomPresenceRepository.DeleteAsync(new RoomPresence
         {
             RoomId = roomId,
-            IdentityId = memberIdentityId
+            MemberId = memberIdentityId
         });
     }
 }

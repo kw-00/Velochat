@@ -63,7 +63,7 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
                 Login = reader.GetString(1),
             };
         }
-        catch (NpgsqlException ex)
+        catch (PostgresException ex)
         {
             if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
                 throw new DuplicatePrimaryKeyException<Identity>(identity);

@@ -14,7 +14,7 @@ public static class RoomPresenceModelConverter
         => new()
         {
             RoomId = roomPresence.RoomId ?? throw new ModelNotCompleteException(),
-            IdentityId = roomPresence.IdentityId ?? throw new ModelNotCompleteException()
+            MemberId = roomPresence.MemberId ?? throw new ModelNotCompleteException()
         };
     
     /// <summary>
@@ -27,6 +27,6 @@ public static class RoomPresenceModelConverter
         => new()
         {
             RoomId = roomPresence.RoomId,
-            IdentityId = roomPresence.IdentityId
+            MemberId = roomPresence.MemberId
         };
 }

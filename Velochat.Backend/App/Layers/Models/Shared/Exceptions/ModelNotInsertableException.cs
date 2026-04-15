@@ -1,3 +1,5 @@
+using Velochat.Backend.App.Shared.Exceptions;
+
 namespace Velochat.Backend.App.Layers.Models;
 
 public class ModelNotInsertableException() 
