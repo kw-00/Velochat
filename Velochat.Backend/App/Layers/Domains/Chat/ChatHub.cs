@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public partial class ChatHub(
-        IIdentityRepository identityRepository,
         IRoomRepository roomRepository,
         IInvitationRepository invitationRepository,
         IRoomPresenceRepository roomPresenceRepository,

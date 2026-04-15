@@ -4,7 +4,7 @@ using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
 
-public class ChatMessageRepository(NpgsqlDataSource dataSource)
+public class ChatMessageRepository(NpgsqlDataSource dataSource) : IChatMessageRepository
 {
 
     public async Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdAsync(int roomId, int limit)

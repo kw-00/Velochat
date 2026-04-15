@@ -58,7 +58,7 @@ ALTER TABLE rooms ADD CONSTRAINT fk_rooms_owner_id
     FOREIGN KEY (owner_id) REFERENCES identities (id)
 ;
 
-ALTER TABLE rooms ADD CONSTRAINT unique_owner_name UNIQUE (owner_id, name);
+ALTER TABLE rooms ADD CONSTRAINT unique_owner_and_name UNIQUE (owner_id, name);
 
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_room_id
     FOREIGN KEY (room_id) REFERENCES rooms (id)
@@ -72,7 +72,7 @@ ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_identity
     FOREIGN KEY (identity_id) REFERENCES identities (id)
 ;
 
-ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_status_check
+ALTER TABLE refresh_token_states ADD CONSTRAINT refresh_token_states_status_check
     CHECK (status IN ('active', 'used', 'revoked'))
 ;
     

@@ -14,4 +14,10 @@ public class Identity : IMalleableModel
     {
         if (Id is not null || Login is null || PasswordHash is null) throw new ModelNotInsertableException();
     }
+
+    [MemberNotNull(nameof(Id))]
+    public void EnsureIdentifiable()
+    {
+        if (Id is null) throw new ModelNotIdentifiableException();
+    }
 }

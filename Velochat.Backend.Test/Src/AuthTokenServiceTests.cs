@@ -1,9 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Options;
+using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
+using Velochat.Backend.App.Shared.Options;
 
 namespace Velochat.Backend.Test.Src;
 
@@ -14,13 +16,22 @@ public class AuthTokenServiceTests
     public async Task TokenParsing_MissingSubject_Throws()
     {
         var options = CreatePlaceholderOptions();
-        var service = new AuthTokenService(options);
+        var service = new AuthTokenService(Options.Create(options));
 
-        var accessTokenNoSub = service.EncodeAccessToken(CreateAccessToken(null, options));
-        var refreshTokenNoSub = service.EncodeRefreshToken(CreateRefreshToken(null, options));
+        var tokenPairNoSub = new TokenPair 
+        { 
+            AccessToken = CreateAccessToken(null, options), 
+            RefreshToken = CreateRefreshToken(null, options) 
+        };
 
-        await Assert.ThrowsAsync<Exception>(async () => await service.ParseAccessTokenAsync(accessTokenNoSub));
-        await Assert.ThrowsAsync<Exception>(async () => await service.ParseRefreshTokenAsync(refreshTokenNoSub));
+        var encodedTokenPair = service.EncodeTokenPair(tokenPairNoSub);
+
+        await Assert.ThrowsAsync<Exception>(
+            async () => await service.ParseAccessTokenAsync(encodedTokenPair.AccessToken)
+        );
+        await Assert.ThrowsAsync<Exception>(
+            async () => await service.ParseRefreshTokenAsync(encodedTokenPair.RefreshToken)
+        );
     }
 
     [TestMethod]
@@ -33,12 +44,12 @@ public class AuthTokenServiceTests
             RefreshTokenLifetimeHours = double.MaxValue
         };
 
-        var service = new AuthTokenService(options);
+        var service = new AuthTokenService(Options.Create(options));
         
         var tokenPair = service.GenerateTokenPair(1);
-
-        await service.ParseAccessTokenAsync(service.EncodeAccessToken(tokenPair.AccessToken));
-        await service.ParseRefreshTokenAsync(service.EncodeRefreshToken(tokenPair.RefreshToken));
+        var encodedTokenPair = service.EncodeTokenPair(tokenPair);
+        await service.ParseAccessTokenAsync(encodedTokenPair.AccessToken);
+        await service.ParseRefreshTokenAsync(encodedTokenPair.RefreshToken);
     }
         
     private static JwtOptions  CreatePlaceholderOptions() => new()

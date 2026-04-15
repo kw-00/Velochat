@@ -26,8 +26,12 @@ builder.Services.AddSingleton(sp =>
 });
 
 // Repositories
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
+builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
 builder.Services.AddScoped<IRefreshTokenStateRepository, RefreshTokenStateRepository>();
+builder.Services.AddScoped<IRoomPresenceRepository, RoomPresenceRepository>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 // Services
 builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
