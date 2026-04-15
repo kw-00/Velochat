@@ -14,6 +14,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<DbOptions>(builder.Configuration.GetSection("Db"));
+builder.Services.Configure<ChatOptions>(builder.Configuration.GetSection("Chat"));
 builder.Services.AddSingleton(sp =>
 {
     var connectionString = sp

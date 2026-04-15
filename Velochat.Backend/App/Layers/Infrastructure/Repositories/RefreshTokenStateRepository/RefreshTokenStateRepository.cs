@@ -59,7 +59,7 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
         query.Parameters.AddWithValue("token", token);
         await query.ExecuteNonQueryAsync();
     }
-    public async Task RevokeAllByIdentityIdAsync(int identityId)
+    public async Task RevokeByIdentityIdAsync(int identityId)
     {
         var query = dataSource.CreateCommand(@"
             UPDATE refresh_token_state

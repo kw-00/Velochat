@@ -57,8 +57,14 @@ ALTER TABLE rooms ADD CONSTRAINT fk_rooms_owner_id
     FOREIGN KEY (owner_id) REFERENCES identities (id)
 ;
 
+ALTER TABLE rooms ADD CONSTRAINT unique_owner_name UNIQUE (owner_id, name);
+
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_room_id
     FOREIGN KEY (room_id) REFERENCES rooms (id)
+;
+
+ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_author_id
+    FOREIGN KEY (author_id) REFERENCES identities (id)
 ;
 
 RESET search_path;

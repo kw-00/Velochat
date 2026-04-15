@@ -1,4 +1,4 @@
-using Velochat.Backend.App.Exceptions.RepositoryExceptions;
+using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
@@ -46,5 +46,5 @@ public interface IRefreshTokenStateRepository
     /// <param name="identityId"></param>
     /// <returns></returns>
     /// <exception cref="RecordNotFoundException{Identity}"></exception>
-    Task RevokeAllByIdentityIdAsync(int identityId);
+    Task RevokeByIdentityIdAsync(int identityId);
 }

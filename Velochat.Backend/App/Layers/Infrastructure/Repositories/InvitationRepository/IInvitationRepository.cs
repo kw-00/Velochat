@@ -1,10 +1,38 @@
-using Velochat.Backend.App.Exceptions.RepositoryExceptions;
+using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
 
 public interface IInvitationRepository
 {
+    /// <summary>
+    /// Gets an invitation.
+    /// </summary>
+    /// <param name="invitation">
+    /// A melleable model of the invitation to be retrieved.
+    /// </param>
+    /// <returns>
+    /// A complete model of the invitation
+    /// or null if the invitation does not exist.
+    /// </returns>
+    /// <exception cref="ModelNotIdentifiableException">
+    /// Thrown when the model is not identifiable.
+    /// </exception>
+    Task<CompleteInvitation?> GetAsync(Invitation invitation);
+
+
+    /// <summary>
+    /// Gets all invitations by identity ID.
+    /// </summary>
+    /// <param name="identityId"></param>
+    /// <returns>
+    /// A list of complete models of the invitations.
+    /// </returns>
+    /// <exception cref="RecordNotFoundException{Identity}">
+    /// Thrown when identity with the given ID does not exist.
+    /// </exception>
+    Task<List<CompleteInvitation>> GetAsync(int identityId);
+
     /// <summary>
     /// Inserts a new invitation.
     /// </summary>
@@ -32,5 +60,5 @@ public interface IInvitationRepository
     /// <exception cref="ModelNotIdentifiableException">
     /// Thrown when the model is not identifiable.
     /// </exception>
-    Task DeleteAsync(CompleteInvitation invitation);
+    Task DeleteAsync(Invitation invitation);
 }

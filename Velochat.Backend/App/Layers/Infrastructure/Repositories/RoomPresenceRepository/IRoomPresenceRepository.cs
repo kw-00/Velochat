@@ -1,10 +1,22 @@
-using Velochat.Backend.App.Exceptions.RepositoryExceptions;
+using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
 
 public interface IRoomPresenceRepository
 {
+    /// <summary>
+    /// Gets a room presence.
+    /// </summary>
+    /// <param name="roomPresence">
+    /// A malleable model of the room presence to be retrieved.
+    /// </param>
+    /// <returns>
+    /// A complete model of the room presence
+    /// or null if the room presence does not exist.
+    /// </returns>
+    Task <CompleteRoomPresence?> GetAsync(RoomPresence roomPresence);
+    
     /// <summary>
     /// Inserts a new room presence.
     /// </summary>
@@ -35,5 +47,5 @@ public interface IRoomPresenceRepository
     /// <exception cref="ModelNotIdentifiableException">
     /// Thrown when the room presence is not identifiable.
     /// </exception>
-    Task DeleteAsync(CompleteRoomPresence roomPresence);
+    Task DeleteAsync(RoomPresence roomPresence);
 }

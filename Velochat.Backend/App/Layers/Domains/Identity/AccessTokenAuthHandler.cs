@@ -30,7 +30,11 @@ public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationScheme
         { 
             var accessToken = await _authTokenService.ParseAccessTokenAsync(accessTokenString);
             var claimsPrincipal = new ClaimsPrincipal();
-            claimsPrincipal.AddIdentity(new ClaimsIdentity(accessToken.Claims));
+            claimsPrincipal.AddIdentity(
+                new ClaimsIdentity(
+                    accessToken.Claims, Scheme.Name
+                )
+            );
             var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
             return AuthenticateResult.Success(authenticationTicket);
         }

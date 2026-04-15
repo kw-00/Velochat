@@ -1,4 +1,4 @@
-namespace Velochat.Backend.App.Exceptions.StatusExceptions;
+namespace Velochat.Backend.App.Layers.Domains;
 
 public class UnauthorizedException(string message) 
     : HttpStatusException(message, 401);

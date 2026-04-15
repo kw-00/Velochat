@@ -1,7 +1,7 @@
 namespace Velochat.Backend.App.Layers.Models;
 
 public class ModelNotInsertableException() 
-    : Exception(
+    : VelochatException(
         "Model is not ready for insertion. Make sure all required fields are filled,"
         + " and fields like auto-generated primary keys are absent in the model."
     );

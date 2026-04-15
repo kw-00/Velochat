@@ -3,15 +3,30 @@ namespace Velochat.Backend.App.Layers.Models;
 public static class RoomPresenceModelConverter
 {
 
-    public static CompleteRoomPresence ToCompleteModel(this RoomPresence roomPresence) => new()
-    {
-        RoomId = roomPresence.RoomId ?? throw new ModelNotCompleteException(),
-        IdentityId = roomPresence.IdentityId ?? throw new ModelNotCompleteException()
-    };
+    /// <summary>
+    /// Converts <see cref="RoomPresence"/> to <see cref="CompleteRoomPresence"/>
+    /// Does not mutate the original object.
+    /// </summary>
+    /// <param name="roomPresence"></param>
+    /// <returns>The conversion result.</returns>
+    /// <exception cref="ModelNotCompleteException"></exception>
+    public static CompleteRoomPresence ToCompleteModel(this RoomPresence roomPresence) 
+        => new()
+        {
+            RoomId = roomPresence.RoomId ?? throw new ModelNotCompleteException(),
+            IdentityId = roomPresence.IdentityId ?? throw new ModelNotCompleteException()
+        };
     
-    public static RoomPresence ToModel(this CompleteRoomPresence roomPresence) => new()
-    {
-        RoomId = roomPresence.RoomId,
-        IdentityId = roomPresence.IdentityId
-    };
+    /// <summary>
+    /// Converts <see cref="CompleteRoomPresence"/> to <see cref="RoomPresence"/>.
+    /// Does not mutate the original object.
+    /// </summary>
+    /// <param name="roomPresence"></param>
+    /// <returns>The conversion result.</returns>
+    public static RoomPresence ToModel(this CompleteRoomPresence roomPresence) 
+        => new()
+        {
+            RoomId = roomPresence.RoomId,
+            IdentityId = roomPresence.IdentityId
+        };
 }

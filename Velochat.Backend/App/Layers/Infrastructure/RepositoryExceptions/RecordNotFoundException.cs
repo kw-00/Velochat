@@ -1,7 +1,7 @@
 using System.Text;
 using Velochat.Backend.App.Layers.Models;
 
-namespace Velochat.Backend.App.Exceptions.RepositoryExceptions;
+namespace Velochat.Backend.App.Layers.Infrastructure;
 
 
 public class RecordNotFoundException<T>(T model) 
@@ -11,7 +11,9 @@ public class RecordNotFoundException<T>(T model)
     private static string GetMessage(T model)
     {
         var primaryKeyProperties = model.GetPrimaryKeyProperties();
-        var messageBuilder = new StringBuilder("Duplicate primary key. Model with ");
+        var messageBuilder = new StringBuilder(
+            $"Duplicate primary key. {typeof(T).Name} with "
+        );
 
         messageBuilder.Append(
             string.Join(

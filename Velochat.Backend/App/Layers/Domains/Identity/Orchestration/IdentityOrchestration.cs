@@ -1,5 +1,5 @@
 
-using Velochat.Backend.App.Exceptions.StatusExceptions;
+using Velochat.Backend.App.Layers.Domains
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
@@ -69,7 +69,7 @@ public class IdentityOrchestration(
             if (refreshTokenState.Status == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
             if (refreshTokenState.Status == RefreshTokenState.Used)
             {
-            await refreshTokenStateRepository.RevokeAllByIdentityIdAsync(identityId);
+            await refreshTokenStateRepository.RevokeByIdentityIdAsync(identityId);
             throw new UnauthorizedException("Refresh token has been used. Revoking all tokens for identity.");
             }
             if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;

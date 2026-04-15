@@ -19,9 +19,6 @@ public class AuthTokenService : IAuthTokenService
         _jwtOptions = jwtOptions.Value;
         _accessTokenHandler.TokenLifetimeInMinutes = (int)_jwtOptions.AccessTokenLifetimeMinutes;
         _refreshTokenHandler.TokenLifetimeInMinutes = (int)(_jwtOptions.RefreshTokenLifetimeHours * 60);
-
-        _accessTokenHandler.MapInboundClaims = false;
-        _refreshTokenHandler.MapInboundClaims = false;
     }
 
     public TokenPair GenerateTokenPair(int identityId)
@@ -84,7 +81,7 @@ public class AuthTokenService : IAuthTokenService
         if (!validationResult.IsValid) throw validationResult.Exception;
         Console.WriteLine("Claims:");
         foreach (var key in validationResult.Claims.Keys) Console.WriteLine($"{key}: {validationResult.Claims[key]}");
-        _ = validationResult.Claims["sub"];
+        _ = validationResult.ClaimsIdentity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
         return (JwtSecurityToken) validationResult.SecurityToken;
     }
 }

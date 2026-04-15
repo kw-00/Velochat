@@ -1,7 +1,7 @@
 using System.Text;
 using Velochat.Backend.App.Layers.Models;
 
-namespace Velochat.Backend.App.Exceptions.RepositoryExceptions;
+namespace Velochat.Backend.App.Layers.Infrastructure;
 
 public class DuplicatePrimaryKeyException<T>(T model)
     : RepositoryException(GetMessage(model))
@@ -10,7 +10,9 @@ public class DuplicatePrimaryKeyException<T>(T model)
     private static string GetMessage(T model)
     {
         var primaryKeyProperties = model.GetPrimaryKeyProperties();
-        var messageBuilder = new StringBuilder("Duplicate primary key. Model with ");
+        var messageBuilder = new StringBuilder(
+            $"Duplicate primary key. {typeof(T).Name} with "
+        );
 
         messageBuilder.Append(
             string.Join(
@@ -39,6 +41,8 @@ public class DuplicatePrimaryKeyException<T>(T model)
             )
         );
 
-        return messageBuilder.ToString();
+        return messageBuilder
+            .Append(" already exists in the database.")
+            .ToString();
     }
 }
