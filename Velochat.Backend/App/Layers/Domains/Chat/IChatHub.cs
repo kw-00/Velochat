@@ -13,6 +13,8 @@ public interface IChatHub
 
     Task<CompleteRoom> JoinRoom(int roomId);
 
+    Task LeaveRoom(int roomId);
+
     Task Invite(int roomId, int identityId);
 
     Task RevokeInvitation(int roomId, int identityId);

@@ -7,6 +7,7 @@ using Velochat.Backend.App.Layers.DTOs;
 using System.Security.Claims;
 using Velochat.Backend.App.Shared.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Velochat.Backend.App.Layers.Domains.Chat;
 
@@ -18,6 +19,7 @@ public partial class ChatHub(
         IOptions<ChatOptions> chatOptions
     ) : Hub, IChatHub
 {
+    [Authorize]
     public async Task<InitialChatInformation> GetInitialChatInformation()
     {
         try

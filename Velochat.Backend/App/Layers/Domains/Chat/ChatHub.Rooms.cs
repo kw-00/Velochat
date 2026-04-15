@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 using Velochat.Backend.App.Shared.Exceptions;
@@ -7,6 +8,7 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public partial class ChatHub
 {
+    [Authorize]
     public async Task<CompleteRoom> CreateRoom(string name)
     {
 
@@ -18,6 +20,7 @@ public partial class ChatHub
                 Name = name,
                 OwnerId = identityId
             });
+            await AddToGroupAsync(room.Id);
             return room;
         }
         catch (DuplicateRoomPathException ex)
@@ -26,6 +29,7 @@ public partial class ChatHub
         }
     }
 
+    [Authorize]
     public async Task DestroyRoom(int roomId)
     {
         var identityId = GetClientIdentityId();
@@ -35,8 +39,10 @@ public partial class ChatHub
         if (roomToRemove.OwnerId != identityId) 
             throw new ForbiddenException("Client does not own the room.");
         await roomRepository.DeleteAsync(roomToRemove.Id);
+        await SendRoomClosedAsync(roomId);
     }
 
+    [Authorize]
     public async Task<CompleteRoom> JoinRoom(int roomId)
     {
         var identityId = GetClientIdentityId();
@@ -54,11 +60,12 @@ public partial class ChatHub
                 RoomId = invitation.RoomId,
                 MemberId = invitation.InviteeId
             });
-            var room = await roomRepository.GetByIdAsync(roomId);
-            return room
+            var room = await roomRepository.GetByIdAsync(roomId)
                 ?? throw new RaceConditionException(
                     $"Room disappeared mid-operation."
                 );
+            await AddToGroupAsync(roomId);
+            return room;
         }
         catch (DuplicatePrimaryKeyException<RoomPresence> ex)
         {
@@ -76,6 +83,17 @@ public partial class ChatHub
                 $"Identity disappeared mid-operation. {ex.Message}"
             );
         }
+    }
+
+    public async Task LeaveRoom(int roomId)
+    {
+        var identityId = GetClientIdentityId();
+        await roomPresenceRepository.DeleteAsync(new RoomPresence
+        {
+            RoomId = roomId,
+            MemberId = identityId
+        });
+        await RemoveFromGroupAsync(roomId);
     }
 }
 

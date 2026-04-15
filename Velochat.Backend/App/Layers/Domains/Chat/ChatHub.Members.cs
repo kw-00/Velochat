@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 using Velochat.Backend.App.Shared.Exceptions;
@@ -7,6 +8,7 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public partial class ChatHub
 {
+    [Authorize]
     public async Task Invite(int roomId, int identityId)
     {
 
@@ -25,6 +27,7 @@ public partial class ChatHub
                 RoomId = roomId,
                 InviteeId = inviteeIdentityId
             });
+            await SendInvitedAsync(roomId);
         }
         catch (DuplicatePrimaryKeyException<Invitation>)
         {
@@ -45,6 +48,7 @@ public partial class ChatHub
         }
     }
 
+    [Authorize]
     public async Task RevokeInvitation(int roomId, int identityId)
     {
         var clientIdentityId = GetClientIdentityId();
@@ -63,6 +67,7 @@ public partial class ChatHub
         });
     }
 
+    [Authorize]
     public async Task KickMember(int roomId, int identityId)
     {
         var clientIdentityId = GetClientIdentityId();
@@ -79,6 +84,7 @@ public partial class ChatHub
             RoomId = roomId,
             MemberId = memberIdentityId
         });
+        await SendKickedAsync(roomId);
     }
 }
 

@@ -18,7 +18,7 @@ public partial class ChatHub
         return identityId;
     }
 
-    private async Task EnsureRoomPresence(int roomId, int identityId)
+    private async Task EnsureRoomPresenceAsync(int roomId, int identityId)
     {
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
         {
@@ -27,4 +27,36 @@ public partial class ChatHub
         })
         ?? throw new ForbiddenException("Client is not in the room.");
     }
+
+
+    private async Task AddToGroupAsync(int roomId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
+    }
+
+    private async Task RemoveFromGroupAsync(int roomId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
+    }
+
+    private async Task SendRoomClosedAsync(int roomId)
+    {
+        await Clients.Group(roomId.ToString()).SendAsync("RoomClosed", roomId);
+    }
+
+    private async Task SendInvitedAsync(int roomId)
+    {
+        await Clients.Group(roomId.ToString()).SendAsync("Invited", roomId);
+    }
+
+    private async Task SendKickedAsync(int roomId)
+    {
+        await Clients.Group(roomId.ToString()).SendAsync("Kicked", roomId);
+    }
+
+    private async Task BroadcastMessageAsync(int roomId, CompleteChatMessage message)
+    {
+        await Clients.Group(roomId.ToString()).SendAsync("MessageReceived", message);
+    }
+
 }

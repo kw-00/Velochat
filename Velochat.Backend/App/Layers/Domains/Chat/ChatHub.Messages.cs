@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
@@ -6,10 +7,11 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 
 public partial class ChatHub
 {
+    [Authorize]
     public async Task<CompleteChatMessage> SendMessage(int roomId, string content)
     {
         var identityId = GetClientIdentityId();
-        await EnsureRoomPresence(roomId, identityId);
+        await EnsureRoomPresenceAsync(roomId, identityId);
 
         CompleteChatMessage message;
         try
@@ -21,6 +23,8 @@ public partial class ChatHub
                 AuthorId = identityId,
                 Content = content
             });
+
+            await BroadcastMessageAsync(roomId, message);
         }
         catch (IdentifierNotFoundException<Room> ex)
         {
@@ -34,6 +38,7 @@ public partial class ChatHub
         return message;
     }
 
+    [Authorize]
     public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesBefore(int roomId, int before)
     {
         var identityId = GetClientIdentityId();
@@ -52,10 +57,11 @@ public partial class ChatHub
         return messages;
     }
 
+    [Authorize]
     public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesAfter(int roomId, int after) 
     {
         var identityId = GetClientIdentityId();
-        await EnsureRoomPresence(roomId, identityId);
+        await EnsureRoomPresenceAsync(roomId, identityId);
 
         var messages = await chatMessageRepository.GetByRoomIdAfterAsync(
             roomId, 
@@ -65,10 +71,11 @@ public partial class ChatHub
         return messages;
     }
 
+    [Authorize]
     public async Task<IReadOnlyList<CompleteChatMessage>> GetRecentMessages(int roomId) 
     {
         var identityId = GetClientIdentityId();
-        await EnsureRoomPresence(roomId, identityId);
+        await EnsureRoomPresenceAsync(roomId, identityId);
 
         var messages = await chatMessageRepository.GetByRoomIdAsync(
             roomId, 
