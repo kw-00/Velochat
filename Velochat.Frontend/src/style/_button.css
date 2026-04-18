@@ -1,0 +1,41 @@
+
+
+.button-primary, .button-secondary, .button-danger {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.button-primary {
+    --base-box-shadow: inset 0 0 0rem 0.2rem rgba(189, 189, 189, 0.26);
+    background: linear-gradient(to top right, rgb(27, 109, 54), rgb(27, 128, 61));
+    box-shadow: var(--base-box-shadow);
+}
+
+.button-secondary {
+    --base-box-shadow: inset 0 0 0rem 0.05rem rgb(59, 59, 59);
+    background: rgb(11, 6, 24);
+    box-shadow: var(--base-box-shadow);
+}
+
+.button-danger {
+    --base-box-shadow: inset 0 0 0rem 0.2rem rgba(189, 189, 189, 0.26);
+    background: linear-gradient(to top right, rgb(109, 27, 27), rgb(128, 27, 27));
+    box-shadow: var(--base-box-shadow);
+}
+
+.button-primary:hover, 
+.button-secondary:hover, 
+.button-danger:hover {
+    box-shadow: 
+        var(--base-box-shadow),
+        inset 0 0 0 100vw rgba(255, 255, 255, 0.07);
+}
+
+.button-primary:active, 
+.button-secondary:active, 
+.button-danger:active {
+    box-shadow: 
+        var(--base-box-shadow),
+        inset 0 0 0 9999px rgba(255, 255, 255, 0.1);
+}

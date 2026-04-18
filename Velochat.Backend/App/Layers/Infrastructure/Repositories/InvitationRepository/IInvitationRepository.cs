@@ -1,3 +1,4 @@
+using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
@@ -28,9 +29,6 @@ public interface IInvitationRepository
     /// <returns>
     /// A list of complete models of the invitations.
     /// </returns>
-    /// <exception cref="IdentifierNotFoundException{Identity}">
-    /// Thrown when identity with the given ID does not exist.
-    /// </exception>
     Task<List<CompleteInvitation>> GetAsync(int identityId);
 
     /// <summary>
@@ -61,4 +59,32 @@ public interface IInvitationRepository
     /// Thrown when the model is not identifiable.
     /// </exception>
     Task DeleteAsync(Invitation invitation);
+
+
+    /// <summary>
+    /// Retrieves data related to an invitation
+    /// and returns it all in the form of a <see cref="FullInvitationDTO"/> 
+    /// </summary>
+    /// <param name="invitation">
+    /// A malleabble model of the invitation to retrieve data for.
+    /// </param>
+    /// <returns>A DTO containing useful information about the invitation
+    /// or null if the invitation does not exist.</returns>
+    /// <exception cref="ModelNotIdentifiableException">
+    /// Thrown when the model is not identifiable.
+    /// </exception>
+    Task<FullInvitationDTO?> GetFullInvitationDataAsync(Invitation invitation);
+
+
+    /// <summary>
+    /// Retrieves data related to all invitations for a given invitee (identity) ID.
+    /// and returns it all in the form of a list of <see cref="FullInvitationDTO"/> 
+    /// </summary>
+    /// <param name="inviteeId">
+    /// The ID of the identity to get invitations for.
+    /// </param>
+    /// <returns>
+    /// A list of DTOs containing useful information about the invitations.
+    /// </returns>
+    Task<IReadOnlyList<FullInvitationDTO>> GetFullInvitationDataAsync(int inviteeId);
 }

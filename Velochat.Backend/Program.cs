@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using Velochat.Backend.App.Layers.Domains.Chat;
 using Velochat.Backend.App.Layers.Domains.Identity;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Shared.Metrics;
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IIdentityOrchestration, IdentityOrchestration>();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services
     .AddAuthentication("AccessToken")
@@ -54,6 +56,7 @@ builder.Services.AddMetrics(conf =>
 var app = builder.Build();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

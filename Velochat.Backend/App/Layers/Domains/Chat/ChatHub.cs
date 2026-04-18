@@ -35,8 +35,8 @@ public partial class ChatHub(
             var identityId = int.Parse(identityIdString);
             return new InitialChatInformation
             {
-                MemberOfRoomIds = await roomRepository.GetByMemberIdAsync(identityId),
-                InvitedToRoomIds = await roomRepository.GetByInviteeIdAsync(identityId)
+                Rooms = await roomRepository.GetByMemberIdAsync(identityId),
+                Invitations = await invitationRepository.GetFullInvitationDataAsync(identityId)
             };
         }
         catch (IdentifierNotFoundException<Models.Identity> ex)

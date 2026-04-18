@@ -24,7 +24,7 @@ public partial class ChatHub
                 Content = content
             });
 
-            await BroadcastMessageAsync(roomId, message);
+            await SendMessageReceivedAsync(message);
         }
         catch (IdentifierNotFoundException<Room> ex)
         {

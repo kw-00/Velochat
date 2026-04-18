@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
+using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Domains.Chat;
@@ -38,25 +39,4 @@ public partial class ChatHub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
     }
-
-    private async Task SendRoomClosedAsync(int roomId)
-    {
-        await Clients.Group(roomId.ToString()).SendAsync("RoomClosed", roomId);
-    }
-
-    private async Task SendInvitedAsync(int roomId)
-    {
-        await Clients.Group(roomId.ToString()).SendAsync("Invited", roomId);
-    }
-
-    private async Task SendKickedAsync(int roomId)
-    {
-        await Clients.Group(roomId.ToString()).SendAsync("Kicked", roomId);
-    }
-
-    private async Task BroadcastMessageAsync(int roomId, CompleteChatMessage message)
-    {
-        await Clients.Group(roomId.ToString()).SendAsync("MessageReceived", message);
-    }
-
 }

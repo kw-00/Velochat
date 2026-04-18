@@ -22,12 +22,14 @@ public partial class ChatHub
             throw new ForbiddenException("Client does not own the room.");
 
         try {
-            await invitationRepository.CreateAsync(new Invitation
+            var invitation = await invitationRepository.CreateAsync(new Invitation
             {
                 RoomId = roomId,
                 InviteeId = inviteeIdentityId
             });
-            await SendInvitedAsync(roomId);
+            var invitationDTO = await invitationRepository.GetFullInvitationDataAsync(invitation.ToModel())
+                ?? throw new RaceConditionException("Invitation or related records disappeared mid-operation.");
+            await SendInvitedAsync(invitationDTO);
         }
         catch (DuplicatePrimaryKeyException<Invitation>)
         {
