@@ -4,7 +4,7 @@ import { AbstractSubscribable } from "./subscribable";
 
 
 
-class InvitationStore extends AbstractSubscribable<Invitation[]> {
+export class InvitationStore extends AbstractSubscribable<Invitation[]> {
     private _invitations: Invitation[] = [];
 
     get() {

@@ -11,11 +11,19 @@ public partial class ChatHub
         var httpContext = Context.GetHttpContext()
             ?? throw new UnauthorizedException("HttpContext is missing.");
 
-        var identityIdString = httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
-            ?? throw new UnauthorizedException("User identifier (sub) is missing.");
+        var identityIdString 
+            = httpContext
+                .User
+                .Claims
+                .First(c => c.Type == ClaimTypes.NameIdentifier).Value
+                ?? throw new UnauthorizedException(
+                    "User identifier (sub) is missing."
+                );
 
         var identityIdIsInteger = int.TryParse(identityIdString, out var identityId);
-        if (!identityIdIsInteger) throw new UnauthorizedException("User identifier (sub) is not an integer.");
+        if (!identityIdIsInteger) throw new UnauthorizedException(
+            "User identifier (sub) is not an integer."
+        );
         return identityId;
     }
 

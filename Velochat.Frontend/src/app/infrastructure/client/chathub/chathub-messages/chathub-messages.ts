@@ -10,18 +10,18 @@ export class ChatHubMessages implements IChatHubMessages{
     }
 
     async sendMessage(roomId: number, content: string): Promise<ChatMessage> {
-        return await this._connection.invoke("SendMessage", roomId, content);
+        return this._connection.invoke("SendMessage", roomId, content);
     }
 
     async getMessagesBefore(roomId: number, before: number): Promise<ChatMessage[]> {
-        return await this._connection.invoke("GetMessagesBefore", roomId, before);
+        return this._connection.invoke("GetMessagesBefore", roomId, before);
     }
 
     async getMessagesAfter(roomId: number, after: number): Promise<ChatMessage[]> {
-        return await this._connection.invoke("GetMessagesAfter", roomId, after);
+        return this._connection.invoke("GetMessagesAfter", roomId, after);
     }
 
     async getRecentMessages(roomId: number): Promise<ChatMessage[]> {
-        return await this._connection.invoke("GetRecentMessages", roomId);
+        return this._connection.invoke("GetRecentMessages", roomId);
     }
 }

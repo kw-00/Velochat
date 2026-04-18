@@ -19,6 +19,8 @@ public partial class ChatHub(
         IOptions<ChatOptions> chatOptions
     ) : Hub, IChatHub
 {
+
+    
     [Authorize]
     public async Task<InitialChatInformation> GetInitialChatInformation()
     {

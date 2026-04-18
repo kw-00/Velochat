@@ -27,8 +27,12 @@ public partial class ChatHub
                 RoomId = roomId,
                 InviteeId = inviteeIdentityId
             });
-            var invitationDTO = await invitationRepository.GetFullInvitationDataAsync(invitation.ToModel())
-                ?? throw new RaceConditionException("Invitation or related records disappeared mid-operation.");
+            var invitationDTO = await invitationRepository
+                .GetFullInvitationDataAsync(invitation.ToModel())
+                
+                ?? throw new RaceConditionException(
+                    "Invitation or related records disappeared mid-operation."
+                );
             await SendInvitedAsync(invitationDTO);
         }
         catch (DuplicatePrimaryKeyException<Invitation>)

@@ -10,20 +10,20 @@ export class ChatHubRooms implements IChatHubRooms {
     }
 
     async createRoom(name: string): Promise<Room> {
-        return await this._connection.invoke("CreateRoom", name);
+        return this._connection.invoke("CreateRoom", name);
     }
 
     async destroyRoom(roomId: number): Promise<void> {
-        return await this._connection.invoke("DestroyRoom", roomId);
+        return this._connection.invoke("DestroyRoom", roomId);
     }
 
     
     async joinRoom(roomId: number): Promise<Room> {
-        return await this._connection.invoke("JoinRoom", roomId);
+        return this._connection.invoke("JoinRoom", roomId);
     }
 
     async leaveRoom(roomId: number): Promise<void> {
-        return await this._connection.invoke("LeaveRoom", roomId);
+        return this._connection.invoke("LeaveRoom", roomId);
     }
 
 }

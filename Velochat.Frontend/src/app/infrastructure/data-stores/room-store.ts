@@ -5,7 +5,7 @@ import { AbstractSubscribable } from "./subscribable";
 
 
 
-class RoomStore extends AbstractSubscribable<Room[]> {
+export class RoomStore extends AbstractSubscribable<Room[]> {
     private _rooms: Room[] = [];
 
     get() {

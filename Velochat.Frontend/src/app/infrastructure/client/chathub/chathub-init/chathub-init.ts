@@ -12,6 +12,6 @@ export class ChatHubInit{
     }
 
     async getInitialChatInformation(): Promise<InitialChatInformation> {
-        return await this._connection.invoke("GetInitialChatInformation");
+        return this._connection.invoke("GetInitialChatInformation");
     }
 }

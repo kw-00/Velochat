@@ -47,12 +47,12 @@ public class AuthTokenService : IAuthTokenService
 
     public async Task<JwtSecurityToken> ParseAccessTokenAsync(string tokenString)
     {
-        return await ParseToken(_accessTokenHandler, tokenString);
+        return ParseToken(_accessTokenHandler, tokenString);
     }
 
     public async Task<JwtSecurityToken> ParseRefreshTokenAsync(string tokenString) 
     {
-        return await ParseToken(_refreshTokenHandler,tokenString);
+        return ParseToken(_refreshTokenHandler,tokenString);
     }
 
     private string EncodeAccessToken(JwtSecurityToken token)

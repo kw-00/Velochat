@@ -39,7 +39,9 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesBefore(int roomId, int before)
+    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesBefore(
+        int roomId, int before
+    )
     {
         var identityId = GetClientIdentityId();
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
@@ -58,7 +60,9 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesAfter(int roomId, int after) 
+    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesAfter(
+        int roomId, int after
+    ) 
     {
         var identityId = GetClientIdentityId();
         await EnsureRoomPresenceAsync(roomId, identityId);
@@ -72,7 +76,9 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetRecentMessages(int roomId) 
+    public async Task<IReadOnlyList<CompleteChatMessage>> GetRecentMessages(
+        int roomId
+    ) 
     {
         var identityId = GetClientIdentityId();
         await EnsureRoomPresenceAsync(roomId, identityId);

@@ -10,14 +10,14 @@ export class ChatHubMembers implements IChatHubMembers {
     }
 
     async invite(roomId: number, identityId: number): Promise<void> {
-        return await this._connection.invoke("Invite", roomId, identityId);
+        return this._connection.invoke("Invite", roomId, identityId);
     }
 
     async revokeInvitation(roomId: number, identityId: number): Promise<void> {
-        return await this._connection.invoke("RevokeInvitation", roomId, identityId);
+        return this._connection.invoke("RevokeInvitation", roomId, identityId);
     }
 
     async kickMember(roomId: number, identityId: number): Promise<void> {
-        return await this._connection.invoke("KickMember", roomId, identityId);
+        return this._connection.invoke("KickMember", roomId, identityId);
     }
 }

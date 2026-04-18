@@ -12,7 +12,10 @@ public class IdentityOrchestration(
 ) : IIdentityOrchestration
 {
 
-    public async Task<(CompleteIdentity Identity, EncodedTokenPair EncodedTokenPair)> RegisterAsync(Credentials credentials)
+    public async Task<(
+        CompleteIdentity Identity, 
+        EncodedTokenPair EncodedTokenPair
+    )> RegisterAsync(Credentials credentials)
     {
         var passwordHash = passwordService.HashPassword(credentials.Password);
         var identity = new Models.Identity
@@ -27,14 +30,20 @@ public class IdentityOrchestration(
         return (CompleteIdentity, tokenPair);
     }
 
-    public async Task<EncodedTokenPair> LogInAsync(Credentials credentials)
+    public async Task<(
+        CompleteIdentity Identity, 
+        EncodedTokenPair EncodedTokenPair
+    )> LogInAsync(Credentials credentials)
     {
         var hashedPassword = passwordService.HashPassword(credentials.Password);
-        var matchedIdentity = await identityRepository.GetByCredentialsAsync(credentials.Login, hashedPassword) 
-            ?? throw new UnauthorizedException("Login and password do not match any identity.");
+        var matchedIdentity = await identityRepository
+            .GetByCredentialsAsync(credentials.Login, hashedPassword) 
+            ?? throw new UnauthorizedException(
+                "Login and password do not match any identity."
+            );
 
         var tokenPair = await GetTokenPairAsync(matchedIdentity.Id);
-        return tokenPair;
+        return (matchedIdentity, tokenPair);
     }
 
 
@@ -59,16 +68,22 @@ public class IdentityOrchestration(
     private async Task<int> CheckAndHandleRefreshTokenStatus(string refreshTokenString)
     {
         try {
-            var refreshToken = await authTokenService.ParseRefreshTokenAsync(refreshTokenString);
+            var refreshToken = await authTokenService.ParseRefreshTokenAsync(
+                refreshTokenString
+            );
             var identityId = int.Parse(refreshToken.Subject);
-            var refreshTokenState = await refreshTokenStateRepository.GetByTokenAsync(refreshTokenString)
+            var refreshTokenState = await refreshTokenStateRepository
+                .GetByTokenAsync(refreshTokenString)
                 ?? throw new UnauthorizedException("Invalid refresh token.");
 
-            if (refreshTokenState.Status == RefreshTokenState.Revoked) throw new UnauthorizedException("Refresh token has been revoked.");
+            if (refreshTokenState.Status == RefreshTokenState.Revoked) 
+                throw new UnauthorizedException("Refresh token has been revoked.");
             if (refreshTokenState.Status == RefreshTokenState.Used)
             {
-            await refreshTokenStateRepository.RevokeByIdentityIdAsync(identityId);
-            throw new UnauthorizedException("Refresh token has been used. Revoking all tokens for identity.");
+                await refreshTokenStateRepository.RevokeByIdentityIdAsync(identityId);
+                throw new UnauthorizedException(
+                    "Refresh token has been used. Revoking all tokens for identity."
+                );
             }
             if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;
             throw new UnauthorizedException("Refresh token status is not valid.");
