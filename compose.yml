@@ -1,6 +1,18 @@
 version: "3.9"
 
 services:
+  frontend:
+    build:
+      context: ./Velochat.Frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: "http://localhost:5000"
+  
   backend:
     build:
       context: ./Velochat.Backend
@@ -10,8 +22,8 @@ services:
     depends_on:
       - db
     environment:
-      ASPNETCORE_URLS: "http://+:8080"
       Db__ConnectionString: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat"
+      ASPNETCORE_URLS: "http://+:8080"
       Jwt__Secret: "6SecretSecretSecretSecretSecretSecret"
       DOTNET_ENVIRONMENT: "Development"
 
@@ -30,6 +42,7 @@ services:
       POSTGRES_USER: velochat
       POSTGRES_PASSWORD: velochat
       POSTGRES_DB: velochat
+
 
 volumes:
   pgdata:

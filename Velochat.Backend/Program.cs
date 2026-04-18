@@ -56,7 +56,7 @@ builder.Services.AddMetrics(conf =>
 var app = builder.Build();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chathub");
+app.MapHub<ChatHub>("/chat-hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

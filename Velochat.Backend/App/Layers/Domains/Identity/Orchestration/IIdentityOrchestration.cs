@@ -6,9 +6,15 @@ namespace Velochat.Backend.App.Layers.Domains.Identity;
 
 public interface IIdentityOrchestration
 {
-    Task<(CompleteIdentity Identity, EncodedTokenPair EncodedTokenPair)> RegisterAsync(Credentials credentials);
+    Task<(
+        CompleteIdentity Identity, 
+        EncodedTokenPair EncodedTokenPair
+    )> RegisterAsync(Credentials credentials);
 
-    Task<EncodedTokenPair> LogInAsync(Credentials credentials);
+    Task<(
+        CompleteIdentity Identity, 
+        EncodedTokenPair EncodedTokenPair
+    )> LogInAsync(Credentials credentials);
 
     Task<EncodedTokenPair> RefreshTokenAsync(string refreshTokenString);
 

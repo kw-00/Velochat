@@ -14,7 +14,9 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
     public async Task<IActionResult> RegisterAsync([FromBody] Credentials credentials)
     {
         var result = await identityOrchestration.RegisterAsync(credentials);
-        return Ok(result);
+
+        SetJwtCookies(result.EncodedTokenPair);
+        return Ok(result.Identity);
     }
 
     [HttpPost]
@@ -22,7 +24,9 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
     public async Task<IActionResult> LogInAsync([FromBody] Credentials credentials)
     {
         var result = await identityOrchestration.LogInAsync(credentials);
-        return Ok(result);
+        
+        SetJwtCookies(result.EncodedTokenPair);
+        return Ok(result.Identity);
     }
 
     [HttpGet]
@@ -33,9 +37,7 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
             ?? throw new UnauthorizedException("Refresh token not found.");
 
         var tokenPair = await identityOrchestration.RefreshTokenAsync(refreshToken);
-        var options = CreateJwtCookieOptions();
-        Response.Cookies.Append("accessToken", tokenPair.AccessToken, options);
-        Response.Cookies.Append("refreshToken", tokenPair.RefreshToken, options);
+        SetJwtCookies(tokenPair);
         return Ok();
     }
 
@@ -47,6 +49,13 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
             ?? throw new UnauthorizedException("Refresh token not found.");
         await identityOrchestration.LogOutAsync(refreshToken);
         return Ok();
+    }
+
+    private void SetJwtCookies(EncodedTokenPair tokenPair)
+    {
+        var options = CreateJwtCookieOptions();
+        Response.Cookies.Append("accessToken", tokenPair.AccessToken, options);
+        Response.Cookies.Append("refreshToken", tokenPair.RefreshToken, options);
     }
 
     private static CookieOptions CreateJwtCookieOptions() => new()
