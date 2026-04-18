@@ -4,6 +4,8 @@ export interface ISubscribable<T> {
     get(): T;
 
     subscribe(callback: (value: T) => void): () => void;
+
+    overwrite(value: T): void;
 }
 
 export abstract class AbstractSubscribable<T> implements ISubscribable<T> {

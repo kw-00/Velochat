@@ -1,4 +1,4 @@
-import invitationStore from "@/app/infrastructure/data-stores/invitation-store";
+import invitationStore from "@/app/infrastructure/data-stores/invitation-store/invitation-store";
 import type { Invitation } from "@/app/infrastructure/models";
 import { StyleClass } from "@/dom-helpers/style-in-js";
 

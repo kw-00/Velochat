@@ -1,5 +1,5 @@
-import type { Identity } from "../models";
-import { AbstractSubscribable } from "./subscribable";
+import type { Identity } from "../../models";
+import { AbstractSubscribable } from "../subscribable";
 
 
 

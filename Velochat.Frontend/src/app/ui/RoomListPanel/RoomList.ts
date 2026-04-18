@@ -1,5 +1,5 @@
 
-import globalRoomStore from "@/app/infrastructure/data-stores/room-store";
+import globalRoomStore from "@/app/infrastructure/data-stores/room-store/room-store";
 import type { Room } from "@/app/infrastructure/models";
 import { StyleClass } from "@/dom-helpers/style-in-js";
 
