@@ -1,5 +1,5 @@
 
-import globalRoomStore from "@/app/infrastructure/data-stores/room-store/room-store";
+import { OrchestratorInstance } from "@/app/infrastructure/orchestrator";
 import type { Room } from "@/app/infrastructure/models";
 import { StyleClass } from "@/dom-helpers/style-in-js";
 
@@ -18,7 +18,7 @@ export default function RoomList() {
     scrollable.className = `${roomContainerStyle.name} vs grow`;
 
     const roomElements = 
-        [...globalRoomStore.get()]
+        [...OrchestratorInstance.roomStore.get()]
         .map(room => RoomListItem(room));
 
     panel.appendAndGet(

@@ -9,7 +9,7 @@ import type { IChatHubClient } from "./client/chathub/chathub-client.interface";
 import type { IRoomStore } from "./data-stores/room-store/room-store.interface";
 import { IdentityClient } from "./client/identity/identity-client";
 import { ChatHubClient } from "./client/chathub/chathub-client";
-import ChatHubHandler from "./client/chathub/chathub-handler/chathub-handler";
+import { ChatHubHandler } from "./client/chathub/chathub-handler/chathub-handler";
 import { ChatHubInit } from "./client/chathub/chathub-init/chathub-init";
 import { ChatHubMembers } from "./client/chathub/chathub-members/chathub-members";
 import { ChatHubMessages } from "./client/chathub/chathub-messages/chathub-messages";
@@ -117,7 +117,9 @@ class Orchestrator {
 export const OrchestratorInstance = new Orchestrator(
     new IdentityClient(),
     new ChatHubClient(
-        new SignalR.HubConnectionBuilder().withUrl("/chat-hub").build(),
+        new SignalR.HubConnectionBuilder()
+            .withUrl(`${import.meta.env.BACKEND_URL ?? "http://localhost:5000"}/chat-hub`) //TODO remove fallback
+            .build(),
         ChatHubInit,
         ChatHubRooms,
         ChatHubMembers,

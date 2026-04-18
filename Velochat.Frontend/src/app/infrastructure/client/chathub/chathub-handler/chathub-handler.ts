@@ -2,7 +2,7 @@ import * as SignalR from "@microsoft/signalr";
 import type { ChatHubEventHandlerMap, IChatHubHandler } from "./chathub-handler.inteface";
 import type { ChatMessage, Invitation } from "@/app/infrastructure/models";
 
-export default class ChatHubHandler implements IChatHubHandler {
+export class ChatHubHandler implements IChatHubHandler {
     private _connection: SignalR.HubConnection;
     private _listeners: {
         [K in keyof ChatHubEventHandlerMap]: Set<ChatHubEventHandlerMap[K]>

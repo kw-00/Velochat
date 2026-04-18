@@ -4,7 +4,7 @@ import { ChatHubMembers } from "./chathub-members/chathub-members";
 import { ChatHubMessages } from "./chathub-messages/chathub-messages";
 import { ChatHubRooms } from "./chathub-rooms/chathub-rooms";
 import type { IChatHubHandler } from "./chathub-handler/chathub-handler.inteface";
-import ChatHubHandler from "./chathub-handler/chathub-handler";
+import { ChatHubHandler } from "./chathub-handler/chathub-handler";
 import type { IChatHubClient } from "./chathub-client.interface";
 import type { IChatHubInit } from "./chathub-init/chathub-init.interface";
 import type { IChatHubMembers } from "./chathub-members/chathub-members.interface";
