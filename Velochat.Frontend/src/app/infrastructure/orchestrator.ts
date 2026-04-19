@@ -69,7 +69,27 @@ class Orchestrator {
         this._messageStore = messageStore;
         this._identityStore = identityStore;
     }
-    
+
+
+    setUpSignalREventHandlers() {
+        this.chatHubClient.handler.addEventListener("invited", (invitation) => {
+            this.invitationStore.add(invitation);
+        });
+        
+        this.chatHubClient.handler.addEventListener("kicked", (roomId) => {
+            this.roomStore.remove(roomId);
+        });
+
+        this.chatHubClient.handler.addEventListener("messageReceived", (message) => {
+            if (this.acceptsMessagesFromStream) {
+                this.messageStore.append(message);
+            }
+        });
+
+        this.chatHubClient
+            .handler
+            .addEventListener("reconnected", () => this._reconcileStateWithServer());
+    }
 
     async registerAndConnect(credentials: Credentials): Promise<void> {
         return this._authenticateAndConnect(
@@ -81,6 +101,11 @@ class Orchestrator {
         return this._authenticateAndConnect(
             credentials, (credentials) => this.identityClient.logInAsync(credentials)
         );
+    }
+
+    async connect() {
+        await this.chatHubClient.connect();
+        await this._reconcileStateWithServer();
     }
     
     
@@ -95,22 +120,29 @@ class Orchestrator {
             throw new Error(authResult.message);
         }
         this.identityStore.overwrite(authResult.data);
-        this.chatHubClient.connect();
-
-        this.chatHubClient.handler.addEventListener("invited", (invitation) => {
-            this.invitationStore.add(invitation);
-        });
-
-        this.chatHubClient.handler.addEventListener("kicked", (roomId) => {
-            this.roomStore.remove(roomId);
-        });
-
-        this.chatHubClient.handler.addEventListener("messageReceived", (message) => {
-            if (this.acceptsMessagesFromStream) {
-                this.messageStore.append(message);
-            }
-        });
+        await this.connect();
     }
+
+    private async _reconcileStateWithServer() {
+        const initialData = await this
+            .chatHubClient
+            .init
+            .getInitialChatInformation();
+
+        this.invitationStore.overwrite(initialData.invitations);
+        this.roomStore.overwrite(initialData.rooms);
+        const selectedRoomId = this.messageStore.selectedRoomId;
+        if (selectedRoomId !== null) {
+            const newMessages = await this
+                .chatHubClient
+                .messages
+                .getRecentMessages(selectedRoomId);
+
+            this.messageStore.reset(newMessages);
+        }
+    }
+
+
 }
 
 

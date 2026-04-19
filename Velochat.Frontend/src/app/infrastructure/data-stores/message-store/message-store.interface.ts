@@ -3,7 +3,9 @@ import type { ChatMessage } from "../../models";
 export interface IGlobalMessageStore {
     get selectedRoomId(): number | null;
 
-    subscribe(callback: (messages: ChatMessage[]) => void): () => void;
+    subscribeMessagesChanged(callback: (messages: ChatMessage[]) => void): () => void;
+
+    subscribeRoomChanged(callback: (roomId: number) => void): () => void;
 
     selectRoom(roomId: number): ChatMessage[];
 
@@ -12,4 +14,6 @@ export interface IGlobalMessageStore {
     append(...messages: ChatMessage[]): void;
 
     prepend(...messages: ChatMessage[]): void;
+
+    reset(messages: ChatMessage[]): void;
 }

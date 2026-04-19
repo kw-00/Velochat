@@ -1,6 +1,7 @@
 import type { Invitation, ChatMessage } from "@/app/infrastructure/models";
 
 export type ChatHubEventHandlerMap = {
+    reconnected: () => void;
     roomClosed: (roomId: number) => void;
     invited: (invitation: Invitation) => void;
     kicked: (roomId: number) => void;
@@ -11,15 +12,10 @@ export type ChatHubEventHandlerMap = {
 export interface IChatHubHandler {
     addEventListener<T extends keyof ChatHubEventHandlerMap>(
         event: T, handler: ChatHubEventHandlerMap[T]
-    ): void;
+    ): () => void;
 
 
     removeEventListener<T extends keyof ChatHubEventHandlerMap>(
         event: T, handler: ChatHubEventHandlerMap[T]
     ): void;
-
-    _roomClosed: ChatHubEventHandlerMap["roomClosed"];
-    _invited: ChatHubEventHandlerMap["invited"];
-    _kicked: ChatHubEventHandlerMap["kicked"];
-    _messageReceived: ChatHubEventHandlerMap["messageReceived"];
 }

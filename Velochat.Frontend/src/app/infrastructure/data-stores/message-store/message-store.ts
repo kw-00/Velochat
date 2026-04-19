@@ -24,6 +24,11 @@ export class RoomMessageStore {
         this._cutOffExcessEnd();
     }
 
+    reset(messages: ChatMessage[]): void {
+        this._messages = messages;
+        this._cutOffExcessStart();
+    }
+
     private _cutOffExcessStart() {
         if (this._messages.length > this._capacity) {
             this._messages = this._messages.slice(this._messages.length - this._capacity);
@@ -44,7 +49,8 @@ export class GlobalMessageStore implements IGlobalMessageStore {
 
     _selectedRoomId: number | null = null;
 
-    _subscribers: Set<(messages: ChatMessage[]) => void> = new Set();
+    _messagesChangedSubscribers: Set<(messages: ChatMessage[]) => void> = new Set();
+    _roomChangedSubscribers: Set<(roomId: number) => void> = new Set();
 
     get selectedRoomId(): number | null {
         return this._selectedRoomId;
@@ -55,20 +61,21 @@ export class GlobalMessageStore implements IGlobalMessageStore {
         this._roomLimit = roomLimit;
     }
 
-    subscribe(callback: (messages: ChatMessage[]) => void): () => void {
-        this._subscribers.add(callback);
-        return () => this._subscribers.delete(callback);
+    subscribeMessagesChanged(callback: (messages: ChatMessage[]) => void): () => void {
+        this._messagesChangedSubscribers.add(callback);
+        return () => this._messagesChangedSubscribers.delete(callback);
     }
 
-    _fire() {
-        const messages = this.getMessages();
-        this._subscribers.forEach(callback => callback(messages));
+    subscribeRoomChanged(callback: (roomId: number) => void): () => void {
+        this._roomChangedSubscribers.add(callback);
+        return () => this._roomChangedSubscribers.delete(callback);
     }
 
     selectRoom(roomId: number): ChatMessage[] {
         this._selectedRoomId = roomId;
         const messages = this.getMessages();
-        this._fire();
+        this._fireMessagesChanged();
+        this._fireRoomChanged();
         return messages;
     }
 
@@ -79,13 +86,19 @@ export class GlobalMessageStore implements IGlobalMessageStore {
     append(...messages: ChatMessage[]): void {
         if (this._selectedRoomId === null) return;
         this._getStore().append(...messages);
-        this._fire();
+        this._fireMessagesChanged();
     }
 
     prepend(...messages: ChatMessage[]): void {
         if (this._selectedRoomId === null) return;
         this._getStore().prepend(...messages);
-        this._fire();
+        this._fireMessagesChanged();
+    }
+
+    reset(messages: ChatMessage[]): void {
+        if (this._selectedRoomId === null) return;
+        this._getStore().reset(messages);
+        this._fireMessagesChanged();
     }
 
     _getStore(): RoomMessageStore {
@@ -110,5 +123,14 @@ export class GlobalMessageStore implements IGlobalMessageStore {
             .sort((a, b) => a[1].lastAccessed - b[1].lastAccessed)[0];
             this._stores.delete(leastRecentlyAccessed[0]);
         }
+    }
+
+    _fireMessagesChanged() {
+        const messages = this.getMessages();
+        this._messagesChangedSubscribers.forEach(callback => callback(messages));
+    }
+
+    _fireRoomChanged() {
+        this._roomChangedSubscribers.forEach(callback => callback(this._selectedRoomId!));
     }
 }
