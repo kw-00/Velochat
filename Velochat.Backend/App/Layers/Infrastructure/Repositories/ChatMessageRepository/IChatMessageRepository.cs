@@ -10,12 +10,13 @@ public interface IChatMessageRepository
     /// messages than the limit.
     /// </summary>
     /// <param name="roomId"></param>
+    /// <param name="after"></param>
     /// <param name="limit"></param>
     /// <returns>The chat messages retrieved.</returns>
     /// <exception cref="IdentifierNotFoundException{Room}">
     /// Thrown when the room ID is not found.
     /// </exception>
-    Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdAsync(int roomId, int limit);
+    Task<IReadOnlyList<CompleteChatMessage>> GetNewestByRoomIdAsync(int roomId, int after, int limit);
 
     /// <summary>
     /// Retrieves chat messages by room ID.

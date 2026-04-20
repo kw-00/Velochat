@@ -1,5 +1,5 @@
 import type { Room } from "../../models";
-import { AbstractSubscribable } from "../subscribable";
+import { AbstractSubscribableScalar } from "../subscribable";
 import type { IRoomStore } from "./room-store.interface";
 
 
@@ -7,7 +7,7 @@ import type { IRoomStore } from "./room-store.interface";
 
 
 export class RoomStore 
-    extends AbstractSubscribable<Room[]> 
+    extends AbstractSubscribableScalar<Room[]> 
     implements IRoomStore
 {
     private _rooms: Room[] = [];

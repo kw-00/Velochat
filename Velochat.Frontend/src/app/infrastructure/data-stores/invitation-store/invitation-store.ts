@@ -1,12 +1,12 @@
 import type { Invitation } from "../../models";
-import { AbstractSubscribable } from "../subscribable";
+import { AbstractSubscribableScalar } from "../subscribable";
 import type { IInvitationStore } from "./invitation-store.interface";
 
 
 
 
 export class InvitationStore 
-    extends AbstractSubscribable<Invitation[]> 
+    extends AbstractSubscribableScalar<Invitation[]> 
     implements IInvitationStore 
 {
     private _invitations: Invitation[] = [];
@@ -25,13 +25,3 @@ export class InvitationStore
     }
 
 }
-
-const invitationStore = new InvitationStore();
-
-invitationStore.modify(() => new Array(100).fill({
-    roomId: 0,
-    roomName: "Some Room",
-    roomOwnerId: 1,
-    roomOwnerLogin: "admin"
-}));
-export default invitationStore;

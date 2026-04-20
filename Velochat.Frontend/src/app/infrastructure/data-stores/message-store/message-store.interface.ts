@@ -1,11 +1,27 @@
 import type { ChatMessage } from "../../models";
 
-export interface IGlobalMessageStore {
+
+export type GlobalMessageStoreEventHandlers = {
+    appended: (appended: ChatMessage[]) => void;
+    prepended: (prepended: ChatMessage[]) => void;
+    removedStart: (removed: ChatMessage[]) => void;
+    removedEnd: (removed: ChatMessage[]) => void;
+    reset: (newMessages: ChatMessage[]) => void;
+    roomChanged: (roomId: number) => void;
+}
+
+export interface IMultiRoomMessageStore {
     get selectedRoomId(): number | null;
 
-    subscribeMessagesChanged(callback: (messages: ChatMessage[]) => void): () => void;
+    addEventListener<T extends keyof GlobalMessageStoreEventHandlers>(
+        event: T, 
+        handler: GlobalMessageStoreEventHandlers[T]
+    ): () => void
 
-    subscribeRoomChanged(callback: (roomId: number) => void): () => void;
+    removeEventListener<T extends keyof GlobalMessageStoreEventHandlers>(
+        event: T, 
+        handler: GlobalMessageStoreEventHandlers[T]
+    ): void
 
     selectRoom(roomId: number): ChatMessage[];
 

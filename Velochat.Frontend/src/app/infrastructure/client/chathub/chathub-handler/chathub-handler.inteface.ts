@@ -11,11 +11,13 @@ export type ChatHubEventHandlerMap = {
 
 export interface IChatHubHandler {
     addEventListener<T extends keyof ChatHubEventHandlerMap>(
-        event: T, handler: ChatHubEventHandlerMap[T]
+        event: T, 
+        handler: ChatHubEventHandlerMap[T]
     ): () => void;
 
 
     removeEventListener<T extends keyof ChatHubEventHandlerMap>(
-        event: T, handler: ChatHubEventHandlerMap[T]
+        event: T, 
+        handler: ChatHubEventHandlerMap[T]
     ): void;
 }

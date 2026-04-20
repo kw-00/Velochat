@@ -1,4 +1,6 @@
 
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
@@ -39,55 +41,85 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesBefore(
-        int roomId, int before
+    public async Task<GoOlderResponse> GoOlder(
+        int oldestMessageOnClient
     )
     {
         var identityId = GetClientIdentityId();
-        _ = await roomPresenceRepository.GetAsync(new RoomPresence
-        {
-            RoomId = roomId,
-            MemberId = identityId
-        })
-        ?? throw new ForbiddenException("Client is not in the room.");
+        var roomId = currentChatroomCache.GetCurrentChatroom(Context.ConnectionId);
+        await EnsureRoomPresenceAsync(roomId, identityId);
 
         var messages = await chatMessageRepository.GetByRoomIdBeforeAsync(
             roomId, 
-            before, 
+            oldestMessageOnClient, 
             chatOptions.Value.MessageBatchSize
         );
-        return messages;
+
+        var topReached = messages.Count < chatOptions.Value.MessageBatchSize;
+        await UnsubscribeFromMessageFeed(roomId);
+        return new GoOlderResponse
+        {
+            Messages = messages,
+            TopReached = topReached
+        };
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetMessagesAfter(
-        int roomId, int after
+    public async Task<GoNewerResponse> GoNewer(
+        int newestMessageOnClient
     ) 
     {
         var identityId = GetClientIdentityId();
+        var roomId = currentChatroomCache.GetCurrentChatroom(Context.ConnectionId);
         await EnsureRoomPresenceAsync(roomId, identityId);
 
         var messages = await chatMessageRepository.GetByRoomIdAfterAsync(
             roomId, 
-            after, 
+            newestMessageOnClient, 
             chatOptions.Value.MessageBatchSize
         );
-        return messages;
+
+        var bottomReached = messages.Count < chatOptions.Value.MessageBatchSize;
+        if (bottomReached) await SubscribeToMessageFeed(roomId);
+        return new GoNewerResponse
+        {
+            Messages = messages,
+            BottomReached = bottomReached
+        };
     }
 
     [Authorize]
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetRecentMessages(
-        int roomId
-    ) 
+    public async Task<SwitchRoomsResponse> SwitchRooms(
+        int roomId, int? newestMessageOnClient
+    )
     {
         var identityId = GetClientIdentityId();
         await EnsureRoomPresenceAsync(roomId, identityId);
-
-        var messages = await chatMessageRepository.GetByRoomIdAsync(
-            roomId, 
+        await UnsubscribeFromMessageFeed(
+            currentChatroomCache.GetCurrentChatroom(Context.ConnectionId)
+        );
+        currentChatroomCache.SetCurrentChatroom(Context.ConnectionId, roomId);
+        await SubscribeToMessageFeed(roomId);
+        var missedMessages = await chatMessageRepository.GetNewestByRoomIdAsync(
+            roomId,
+            newestMessageOnClient ?? -1,
             chatOptions.Value.MessageBatchSize
         );
-        return messages;
+
+        var IsContinuity = missedMessages.Count < chatOptions.Value.MessageBatchSize;
+        
+        return new SwitchRoomsResponse
+        {
+            Messages = missedMessages,
+            IsContinuity = IsContinuity
+        };
+    }
+
+    [Authorize]
+    public async Task UnsubscribeFromMessageFeed()
+    {
+        var currentRoom = currentChatroomCache.GetCurrentChatroom(Context.ConnectionId);
+        await UnsubscribeFromMessageFeed(currentRoom);
     }
 }
 

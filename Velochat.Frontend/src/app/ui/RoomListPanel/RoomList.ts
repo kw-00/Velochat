@@ -1,42 +1,45 @@
 
 import { OrchestratorInstance } from "@/app/infrastructure/orchestrator";
 import type { Room } from "@/app/infrastructure/models";
-import { StyleClass } from "@/dom-helpers/style-in-js";
+import { createElementWithCallbacks } from "@/dom-helpers/lifecycle";
 
 
-const roomContainerStyle = new StyleClass("room-list", `
-    overflow-y: scroll;
-    contain: size;
-`);
-roomContainerStyle.inject();
 
 export default function RoomList() {
-    const panel = document.createElement("div");
+    const panel = createElementWithCallbacks();
     panel.className = "frame vs grow";
 
-    const scrollable = document.createElement("div");
-    scrollable.className = `${roomContainerStyle.name} vs grow`;
+    const addOrUpdateScrollable = () => {
+        const oldScrollable = panel.querySelector(`[data-scrollable]`);
+        oldScrollable?.remove();
 
-    const roomElements = 
-        [...OrchestratorInstance.roomStore.get()]
-        .map(room => RoomListItem(room));
+        const scrollable = document.createElement("div");
+        scrollable.className = `vs grow scrollify csize`;
+        scrollable.setAttribute("data-scrollable", "");
+    
+        const roomElements = 
+            OrchestratorInstance.roomStore.get()
+            .map(room => RoomListItem(room));
 
-    panel.appendAndGet(
-        scrollable.appendAndGet(
-            ...roomElements
-        )
-    );
+        panel.appendAndGet(
+            scrollable.appendAndGet(
+                ...roomElements
+            )
+        );
+    };
+    addOrUpdateScrollable();
+
+    const unsubscribeFromStore = OrchestratorInstance.roomStore.subscribe(addOrUpdateScrollable);
+    panel.setCallback("disconnectedCallback", unsubscribeFromStore);
+
     return panel;
 }
 
-const itemStyle = new StyleClass("room-list-item", `
-
-`);
-itemStyle.inject();
 
 function RoomListItem(room: Room) {
     const roomListItem = document.createElement("div");
-    roomListItem.className = `${itemStyle.name} item hs`;
+    roomListItem.className = `item hs`;
     roomListItem.textContent = `${room.id} ${room.name}`;
     return roomListItem;
 }
+

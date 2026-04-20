@@ -1,17 +1,67 @@
-import invitationStore from "@/app/infrastructure/data-stores/invitation-store/invitation-store";
 import type { Invitation } from "@/app/infrastructure/models";
-import { StyleClass } from "@/dom-helpers/style-in-js";
+import { OrchestratorInstance } from "@/app/infrastructure/orchestrator";
+import { createElementWithCallbacks } from "@/dom-helpers/lifecycle";
 
-const listStyle = new StyleClass("invitation-list", `
-    overflow-y: scroll;
-`);
-listStyle.inject();
+
 export default function InvitationList() {
-    const invitationList = document.createElement("div");
-    invitationList.className = `${listStyle.name} frame vs grow`;
-    const listItems = invitationStore.get().map(invitation => InvitationListItem(invitation));
+    const outerContainer = createElementWithCallbacks();
+    outerContainer.className = `frame vs grow`;
 
-    return invitationList.appendAndGet(...listItems);
+    let nearTop = true;
+    let scrollTop = 0;
+    let scrollFromBottom = 0;
+    let userIsScrolling = false;
+
+    const addOrUpdateScrollable = () => {
+        const oldScrollable = outerContainer.querySelector(`[data-scrollable]`);
+        oldScrollable?.remove();
+
+        const scrollable = document.createElement("div");
+        scrollable.className = `vs grow scrollify csize`;
+        scrollable.setAttribute("data-scrollable", "");
+
+        const invitationElements = OrchestratorInstance
+            .invitationStore
+            .get()
+            .map(invitation => InvitationListItem(invitation));
+        
+        outerContainer.appendAndGet(
+            scrollable.appendAndGet(
+                ...invitationElements.reverse()
+            )
+        );
+
+        if (!nearTop) {
+            if (!userIsScrolling) {
+                scrollable.scrollTo({
+                    top: scrollable.scrollHeight - scrollable.clientHeight - scrollFromBottom,
+                    behavior: "instant"
+                });
+            } else {
+                scrollable.scrollTo({
+                    top: scrollTop,
+                    behavior: "smooth"
+                });
+            }
+        }
+        scrollable.addEventListener("scroll", () => {
+            scrollTop = scrollable.scrollTop;
+            scrollFromBottom 
+                = scrollable.scrollHeight - scrollable.clientHeight - scrollable.scrollTop;
+            nearTop = scrollable.scrollTop === 0;
+        });
+
+        scrollable.addEventListener("pointerdown", () => userIsScrolling = true);
+        scrollable.addEventListener("pointerup", () => userIsScrolling = false);
+    };
+    addOrUpdateScrollable();
+
+    const unsubscribeFromStore = OrchestratorInstance
+        .invitationStore
+        .subscribe(addOrUpdateScrollable);
+    outerContainer.setCallback("disconnectedCallback", unsubscribeFromStore);;
+
+    return outerContainer;
 }
 
 function InvitationListItem(invitation: Invitation) {

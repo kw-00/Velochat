@@ -1,9 +1,9 @@
 import type { Invitation } from "../../models";
-import type { ISubscribable } from "../subscribable";
+import type { ISubscribableScalar } from "../subscribable";
 
 
 
 
-export interface IInvitationStore extends ISubscribable<Invitation[]> {
+export interface IInvitationStore extends ISubscribableScalar<Invitation[]> {
     add(invitation: Invitation): void;
 }

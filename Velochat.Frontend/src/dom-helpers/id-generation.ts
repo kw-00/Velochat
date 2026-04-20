@@ -1,9 +1,9 @@
 
 
-export function generateRandomId() {
-    return Math.floor(Math.random() * 900_000 + 100_000);
+export function generateRandomId(): string {
+    return Math.floor(Math.random() * 900_000 + 100_000).toString();
 }
 
-export function getRandomClassPrefix() {
+export function getRandomClassPrefix(): string {
     return `i${generateRandomId()}_`;
 }

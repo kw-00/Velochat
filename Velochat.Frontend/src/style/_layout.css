@@ -1,6 +1,3 @@
-.grow {
-    flex-grow: 1;
-}
 
 .vs {
     display: flex;
@@ -10,6 +7,10 @@
 .hs {
     display: flex;
     flex-direction: row;
+}
+
+.grow {
+    flex-grow: 1;
 }
 
 #app {
@@ -58,4 +59,20 @@
 .py-lg {
     padding-top: var(--padding-lg);
     padding-bottom: var(--padding-lg);
+}
+
+.scrolly {
+    overflow-y: scroll;
+}
+
+.scrollify {
+    overflow-y: auto;
+}
+
+.csize {
+    contain: size;
+}
+
+.clayout {
+    contain: layout;
 }

@@ -44,6 +44,7 @@ function InvtiationListDialog() {
     const panel = document.createElement("div");
     panel.className = "panel vs grow gap-md";
     panel.style.maxHeight = "70vh";
+    panel.style.width = "50vw";
     
     const closeButton = document.createElement("button");
     closeButton.className = "button-secondary";

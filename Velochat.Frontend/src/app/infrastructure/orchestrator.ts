@@ -4,7 +4,7 @@ import type { Identity } from "./models";
 import type { ApiResponse } from "./client/response";
 import type { IIdentityStore } from "./data-stores/identity-store/identity-store.interface";
 import type { IInvitationStore } from "./data-stores/invitation-store/invitation-store.interface";
-import type { IGlobalMessageStore } from "./data-stores/message-store/message-store.interface";
+import type { IMultiRoomMessageStore } from "./data-stores/message-store/message-store.interface";
 import type { IChatHubClient } from "./client/chathub/chathub-client.interface";
 import type { IRoomStore } from "./data-stores/room-store/room-store.interface";
 import { IdentityClient } from "./client/identity/identity-client";
@@ -19,7 +19,7 @@ import { InvitationStore } from "./data-stores/invitation-store/invitation-store
 import { RoomStore } from "./data-stores/room-store/room-store";
 
 import * as SignalR from "@microsoft/signalr";
-import { GlobalMessageStore } from "./data-stores/message-store/message-store";
+import { MultiRoomMessageStore } from "./data-stores/message-store/message-store";
 
 
 class Orchestrator {
@@ -32,7 +32,7 @@ class Orchestrator {
     
     private _invitationStore: IInvitationStore;
     private _roomStore: IRoomStore;
-    private _messageStore: IGlobalMessageStore;
+    private _messageStore: IMultiRoomMessageStore;
     private _identityStore: IIdentityStore; 
 
     get identityClient(): IIdentityClient {
@@ -47,7 +47,7 @@ class Orchestrator {
     get roomStore(): IRoomStore {
         return this._roomStore;
     }
-    get messageStore(): IGlobalMessageStore {
+    get messageStore(): IMultiRoomMessageStore {
         return this._messageStore;
     }
     get identityStore(): IIdentityStore {
@@ -59,7 +59,7 @@ class Orchestrator {
         chatHubClient: IChatHubClient,
         invitationStore: IInvitationStore,
         roomStore: IRoomStore,
-        messageStore: IGlobalMessageStore,
+        messageStore: IMultiRoomMessageStore,
         identityStore: IIdentityStore
     ) {
         this._identityClient = identityClient;
@@ -160,7 +160,7 @@ export const OrchestratorInstance = new Orchestrator(
     ),
     new InvitationStore(),
     new RoomStore(),
-    new GlobalMessageStore(300, 100),
+    new MultiRoomMessageStore(300, 100),
     new IdentityStore()
 );
 

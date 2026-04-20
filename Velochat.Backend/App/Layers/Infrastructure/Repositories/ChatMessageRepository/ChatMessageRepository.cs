@@ -7,16 +7,19 @@ namespace Velochat.Backend.App.Layers.Infrastructure;
 public class ChatMessageRepository(NpgsqlDataSource dataSource) : IChatMessageRepository
 {
 
-    public async Task<IReadOnlyList<CompleteChatMessage>> GetByRoomIdAsync(int roomId, int limit)
+    public async Task<IReadOnlyList<CompleteChatMessage>> GetNewestByRoomIdAsync(int roomId, int after, int limit)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, room_id, author_id, content 
             FROM chat_messages 
-            WHERE room_id = @roomId 
+            WHERE 
+                room_id = @roomId
+                AND room_id > @after
             ORDER BY id DESC 
             LIMIT @limit;
         ");
         query.Parameters.AddWithValue("roomId", roomId);
+        query.Parameters.AddWithValue("after", after);
         query.Parameters.AddWithValue("limit", limit);
         await using var reader = await query.ExecuteReaderAsync();
         var messages = new List<CompleteChatMessage>();

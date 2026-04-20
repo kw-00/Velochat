@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Models;
@@ -37,14 +38,22 @@ public partial class ChatHub
         ?? throw new ForbiddenException("Client is not in the room.");
     }
 
-
-    private async Task AddToGroupAsync(int roomId)
+    private static string RoomIdMessageFeedGroup(int roomId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
+        return "msgfeed:" + roomId.ToString();
+    }
+    private static int MessageFeedGroupToRoomId(string messageFeedGroupName) 
+    {
+        return int.Parse(messageFeedGroupName.Split(":")[0]);
     }
 
-    private async Task RemoveFromGroupAsync(int roomId)
+    private async Task SubscribeToMessageFeed(int roomId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
+        await Groups.AddToGroupAsync(Context.ConnectionId, RoomIdMessageFeedGroup(roomId));
+    }
+
+    private async Task UnsubscribeFromMessageFeed(int roomId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, RoomIdMessageFeedGroup(roomId));
     }
 }

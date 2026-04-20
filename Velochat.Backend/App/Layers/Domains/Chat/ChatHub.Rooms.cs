@@ -20,7 +20,7 @@ public partial class ChatHub
                 Name = name,
                 OwnerId = identityId
             });
-            await AddToGroupAsync(room.Id);
+            await SubscribeToMessageFeed(room.Id);
             return room;
         }
         catch (DuplicateRoomPathException ex)
@@ -64,7 +64,6 @@ public partial class ChatHub
                 ?? throw new RaceConditionException(
                     $"Room disappeared mid-operation."
                 );
-            await AddToGroupAsync(roomId);
             return room;
         }
         catch (DuplicatePrimaryKeyException<RoomPresence> ex)
@@ -93,7 +92,7 @@ public partial class ChatHub
             RoomId = roomId,
             MemberId = identityId
         });
-        await RemoveFromGroupAsync(roomId);
+        await UnsubscribeFromMessageFeed(roomId);
     }
 }
 

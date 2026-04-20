@@ -16,7 +16,8 @@ public partial class ChatHub(
         IInvitationRepository invitationRepository,
         IRoomPresenceRepository roomPresenceRepository,
         IChatMessageRepository chatMessageRepository,
-        IOptions<ChatOptions> chatOptions
+        IOptions<ChatOptions> chatOptions,
+        CurrentChatroomCache currentChatroomCache
     ) : Hub, IChatHub
 {
 

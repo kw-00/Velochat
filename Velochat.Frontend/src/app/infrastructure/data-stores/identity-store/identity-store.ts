@@ -1,10 +1,10 @@
 import type { Identity } from "../../models";
-import { AbstractSubscribable } from "../subscribable";
+import { AbstractSubscribableScalar } from "../subscribable";
 
 
 
 
-export class IdentityStore extends AbstractSubscribable<Identity | null> {
+export class IdentityStore extends AbstractSubscribableScalar<Identity | null> {
 
     private _identity: Identity | null = null;
     get(): Identity | null {
