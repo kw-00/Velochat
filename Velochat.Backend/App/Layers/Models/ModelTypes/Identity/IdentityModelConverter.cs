@@ -3,7 +3,9 @@ namespace Velochat.Backend.App.Layers.Models;
 public static class IdentityModelConverter
 {
     /// <summary>
-    /// Converts <see cref="Identity"/> to <see cref="CompleteIdentity"/>.</summary>
+    /// Converts <see cref="Identity"/> to <see cref="CompleteIdentity"/>.
+    /// Does not mutate the original object.
+    /// </summary>
     /// <param name="identity">The identity to convert.</param>
     /// <returns>The conversion result.</returns>
     /// <exception cref="ModelNotCompleteException">
@@ -19,6 +21,7 @@ public static class IdentityModelConverter
 
     /// <summary>
     /// Converts <see cref="CompleteIdentity"/> to <see cref="Identity"/>.
+    /// Does not mutate the original object.
     /// </summary>
     /// <param name="identity">The complete identity to convert.</param>
     /// <returns>The conversion result.</returns>

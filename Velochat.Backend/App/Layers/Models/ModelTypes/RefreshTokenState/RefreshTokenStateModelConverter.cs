@@ -5,6 +5,7 @@ public static class RefreshTokenStateModelConverter
     
     /// <summary>
     /// Converts a <see cref="RefreshTokenState"/>  to a <see cref="CompleteRefreshTokenState"/>.
+    /// Does not mutate the original object.
     /// </summary>
     /// <param name="refreshTokenState">The RefreshTokenState to convert.</param>
     /// <returns>A CompleteRefreshTokenState.</returns>
@@ -21,6 +22,7 @@ public static class RefreshTokenStateModelConverter
     
     /// <summary>
     /// Converts a <see cref="RefreshTokenState"/>  to a <see cref="CompleteRefreshTokenState"/>.
+    /// Does not mutate the original object.
     /// </summary>
     /// <param name="refreshTokenState">The CompleteRefreshTokenState to convert.</param>
     /// <returns>A RefreshTokenState.</returns>
