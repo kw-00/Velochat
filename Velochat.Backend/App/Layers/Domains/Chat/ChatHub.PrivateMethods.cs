@@ -7,12 +7,12 @@ using Velochat.Backend.App.Layers.Models;
 namespace Velochat.Backend.App.Layers.Domains.Chat;
 public partial class ChatHub
 {
-    private int GetClientIdentityId()
+    private int GetClientUserId()
     {
         var httpContext = Context.GetHttpContext()
             ?? throw new UnauthorizedException("HttpContext is missing.");
 
-        var identityIdString 
+        var userIdString 
             = httpContext
                 .User
                 .Claims
@@ -21,19 +21,19 @@ public partial class ChatHub
                     "User identifier (sub) is missing."
                 );
 
-        var identityIdIsInteger = int.TryParse(identityIdString, out var identityId);
-        if (!identityIdIsInteger) throw new UnauthorizedException(
+        var userIdIsInteger = int.TryParse(userIdString, out var userId);
+        if (!userIdIsInteger) throw new UnauthorizedException(
             "User identifier (sub) is not an integer."
         );
-        return identityId;
+        return userId;
     }
 
-    private async Task EnsureRoomPresenceAsync(int roomId, int identityId)
+    private async Task EnsureRoomPresenceAsync(int roomId, int userId)
     {
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
         {
             RoomId = roomId,
-            MemberId = identityId
+            MemberId = userId
         })
         ?? throw new ForbiddenException("Client is not in the room.");
     }

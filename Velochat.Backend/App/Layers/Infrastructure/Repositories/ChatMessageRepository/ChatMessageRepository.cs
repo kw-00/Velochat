@@ -135,7 +135,7 @@ public class ChatMessageRepository(NpgsqlDataSource dataSource) : IChatMessageRe
                 }
                 if (ex.ConstraintName == "fk_chat_messages_author_id")
                 {
-                    throw new IdentifierNotFoundException<Identity>(
+                    throw new IdentifierNotFoundException<User>(
                         "Author", message.AuthorId
                     );
                 }

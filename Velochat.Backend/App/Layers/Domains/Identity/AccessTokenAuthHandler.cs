@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Velochat.Backend.App.Layers.Infrastructure;
 
-namespace Velochat.Backend.App.Layers.Domains.Identity;
+namespace Velochat.Backend.App.Layers.Domains.User;
 
 public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
@@ -30,8 +30,8 @@ public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationScheme
         { 
             var accessToken = await _authTokenService.ParseAccessTokenAsync(accessTokenString);
             var claimsPrincipal = new ClaimsPrincipal();
-            claimsPrincipal.AddIdentity(
-                new ClaimsIdentity(
+            claimsPrincipal.AddUser(
+                new ClaimsUser(
                     accessToken.Claims, Scheme.Name
                 )
             );

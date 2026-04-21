@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
@@ -34,7 +33,7 @@ public class IdentifierNotFoundException<T>
         }
 
         var messageBuilder = new StringBuilder(
-            $"{role ?? typeof(T).Name} does not exist. {typeof(T).Name} with ID of "
+            $"{Capitalized(role) ?? typeof(T).Name} does not exist. {typeof(T).Name} with ID of "
         ).Append(primaryKeyValues.Length > 1 ? '(' : "");
 
         return messageBuilder.Append(
@@ -61,7 +60,7 @@ public class IdentifierNotFoundException<T>
     {
         var primaryKeyProperties = model.GetPrimaryKeyProperties();
         var messageBuilder = new StringBuilder(
-            $"{role ?? typeof(T).Name} does not exist. {typeof(T).Name} with "
+            $"{Capitalized(role) ?? typeof(T).Name} does not exist. {typeof(T).Name} with "
         );
 
         messageBuilder.Append(
@@ -94,5 +93,11 @@ public class IdentifierNotFoundException<T>
         return messageBuilder
             .Append($" does not exist.")
             .ToString();
+    }
+
+    private static string? Capitalized(string? s)
+    {
+        if (s is null || s.Length == 0) return s;
+        return char.ToUpper(s[0]) + s[1..];
     }
 }

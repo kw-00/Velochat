@@ -56,7 +56,7 @@ public interface IChatMessageRepository
     /// <exception cref="ModelNotInsertableException">
     /// Thrown when the chat message to be inserted is not insertable.
     /// </exception>
-    /// <exception cref="IdentifierNotFoundException{Identity}">
+    /// <exception cref="IdentifierNotFoundException{User}">
     /// Thrown when the author ID is not found.
     /// </exception>
     /// <exception cref="IdentifierNotFoundException{Room}">

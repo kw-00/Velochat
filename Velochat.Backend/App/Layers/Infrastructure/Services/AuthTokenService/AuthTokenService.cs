@@ -1,8 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.UserModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.UserModel.Tokens;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Shared.Options;
 
@@ -21,11 +21,11 @@ public class AuthTokenService : IAuthTokenService
         _refreshTokenHandler.TokenLifetimeInMinutes = (int)(_jwtOptions.RefreshTokenLifetimeHours * 60);
     }
 
-    public TokenPair GenerateTokenPair(int identityId)
+    public TokenPair GenerateTokenPair(int userId)
     {
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([new Claim("sub", identityId.ToString())]),
+            Subject = new ClaimsUser([new Claim("sub", userId.ToString())]),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)), 
                 SecurityAlgorithms.HmacSha256Signature
@@ -81,7 +81,7 @@ public class AuthTokenService : IAuthTokenService
         if (!validationResult.IsValid) throw validationResult.Exception;
         Console.WriteLine("Claims:");
         foreach (var key in validationResult.Claims.Keys) Console.WriteLine($"{key}: {validationResult.Claims[key]}");
-        _ = validationResult.ClaimsIdentity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+        _ = validationResult.ClaimsUser.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
         return (JwtSecurityToken) validationResult.SecurityToken;
     }
 }

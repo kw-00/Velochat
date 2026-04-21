@@ -9,7 +9,7 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
     public async Task<CompleteRefreshTokenState?> GetByTokenAsync(string token)
     {
         var query = dataSource.CreateCommand(@"
-            SELECT token, identity_id, status 
+            SELECT token, user_id, status 
             FROM refresh_token_states 
             WHERE token = @token;
         ");
@@ -20,7 +20,7 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
             return new CompleteRefreshTokenState
             {
                 Token = reader.GetString(0),
-                IdentityId = reader.GetInt32(1),
+                UserId = reader.GetInt32(1),
                 Status = reader.GetString(2)
             };
         }
@@ -31,11 +31,11 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
     {
         refreshTokenState.EnsureInsertable();
         var query = dataSource.CreateCommand(@"
-            INSERT INTO refresh_token_states (token, identity_id, status) 
-            VALUES (@token, @identityId, @status);
+            INSERT INTO refresh_token_states (token, user_id, status) 
+            VALUES (@token, @userId, @status);
         ");
         query.Parameters.AddWithValue("token", refreshTokenState.Token);
-        query.Parameters.AddWithValue("identityId", refreshTokenState.IdentityId);
+        query.Parameters.AddWithValue("userId", refreshTokenState.UserId);
         query.Parameters.AddWithValue("status", refreshTokenState.Status);
         try
         {
@@ -80,14 +80,14 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
         await query.ExecuteNonQueryAsync();
     }
     
-    public async Task RevokeByIdentityIdAsync(int identityId)
+    public async Task RevokeByUserIdAsync(int userId)
     {
         var query = dataSource.CreateCommand(@"
             UPDATE refresh_token_states
             SET status = 'revoked'
-            WHERE identity_id = @identityId;
+            WHERE user_id = @userId;
         ");
-        query.Parameters.AddWithValue("identityId", identityId);
+        query.Parameters.AddWithValue("userId", userId);
         await query.ExecuteNonQueryAsync();
     }
 }

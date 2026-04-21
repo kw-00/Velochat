@@ -29,8 +29,8 @@ public interface IRoomPresenceRepository
     /// <exception cref="DuplicatePrimaryKeyException{RoomPresence}">
     /// Thrown when the room presence already exists.
     /// </exception>
-    /// <exception cref="IdentifierNotFoundException{Identity}">
-    /// Thrown when no identity with a matching ID exists.
+    /// <exception cref="IdentifierNotFoundException{User}">
+    /// Thrown when no user with a matching ID exists.
     /// </exception> 
     /// <exception cref="IdentifierNotFoundException{Room}">
     /// Thrown when no room with a matching ID exists.

@@ -15,11 +15,11 @@ public interface IChatHub
 
     Task LeaveRoom(int roomId);
 
-    Task Invite(int roomId, int identityId);
+    Task Invite(int roomId, int userId);
 
-    Task RevokeInvitation(int roomId, int identityId);
+    Task RevokeInvitation(int roomId, int userId);
 
-    Task KickMember(int roomId, int identityId);
+    Task KickMember(int roomId, int userId);
 
     Task<CompleteChatMessage> SendMessage(int roomId, string content);
 

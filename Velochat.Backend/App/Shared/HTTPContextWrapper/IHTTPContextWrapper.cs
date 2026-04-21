@@ -4,5 +4,5 @@ public interface IHTTPContextWrapper
 {
     HttpContext HttpContext { get; }
 
-    int ClientIdentity { get; }
+    int ClientUser { get; }
 }

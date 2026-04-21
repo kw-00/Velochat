@@ -12,13 +12,13 @@ public partial class ChatHub
     public async Task<CompleteRoom> CreateRoom(string name)
     {
 
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         try
         {
             var room = await roomRepository.CreateAsync(new Room
             {
                 Name = name,
-                OwnerId = identityId
+                OwnerId = userId
             });
             await SubscribeToMessageFeed(room.Id);
             return room;
@@ -32,11 +32,11 @@ public partial class ChatHub
     [Authorize]
     public async Task DestroyRoom(int roomId)
     {
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         var roomToRemove = await roomRepository.GetByIdAsync(roomId) 
             ?? throw new NotFoundException("Room not found.");
 
-        if (roomToRemove.OwnerId != identityId) 
+        if (roomToRemove.OwnerId != userId) 
             throw new ForbiddenException("Client does not own the room.");
         await roomRepository.DeleteAsync(roomToRemove.Id);
         await SendRoomClosedAsync(roomId);
@@ -45,11 +45,11 @@ public partial class ChatHub
     [Authorize]
     public async Task<CompleteRoom> JoinRoom(int roomId)
     {
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         var invitation = await invitationRepository.GetAsync(new Invitation
         {
             RoomId = roomId,
-            InviteeId = identityId
+            InviteeId = userId
         }) 
         ?? throw new ForbiddenException("Client is not invited to the room.");
 
@@ -76,21 +76,21 @@ public partial class ChatHub
                 $"Room disappeared mid-operation. {ex.Message}"
             );
         }
-        catch (IdentifierNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.User> ex)
         {
             throw new RaceConditionException(
-                $"Identity disappeared mid-operation. {ex.Message}"
+                $"User disappeared mid-operation. {ex.Message}"
             );
         }
     }
 
     public async Task LeaveRoom(int roomId)
     {
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         await roomPresenceRepository.DeleteAsync(new RoomPresence
         {
             RoomId = roomId,
-            MemberId = identityId
+            MemberId = userId
         });
         await UnsubscribeFromMessageFeed(roomId);
     }

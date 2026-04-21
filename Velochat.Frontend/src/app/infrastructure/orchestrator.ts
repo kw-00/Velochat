@@ -1,20 +1,20 @@
-import type { Credentials, IIdentityClient } from "./client/identity/identity-client.interface";
+import type { Credentials, IUserClient } from "./client/user/user-client.interface";
 
-import type { Identity } from "./models";
+import type { User } from "./models";
 import type { ApiResponse } from "./client/response";
-import type { IIdentityStore } from "./data-stores/identity-store/identity-store.interface";
+import type { IUserStore } from "./data-stores/user-store/user-store.interface";
 import type { IInvitationStore } from "./data-stores/invitation-store/invitation-store.interface";
 import type { IMultiRoomMessageStore } from "./data-stores/message-store/message-store.interface";
 import type { IChatHubClient } from "./client/chathub/chathub-client.interface";
 import type { IRoomStore } from "./data-stores/room-store/room-store.interface";
-import { IdentityClient } from "./client/identity/identity-client";
+import { UserClient } from "./client/user/user-client";
 import { ChatHubClient } from "./client/chathub/chathub-client";
 import { ChatHubHandler } from "./client/chathub/chathub-handler/chathub-handler";
 import { ChatHubInit } from "./client/chathub/chathub-init/chathub-init";
 import { ChatHubMembers } from "./client/chathub/chathub-members/chathub-members";
 import { ChatHubMessages } from "./client/chathub/chathub-messages/chathub-messages";
 import { ChatHubRooms } from "./client/chathub/chathub-rooms/chathub-rooms";
-import { IdentityStore } from "./data-stores/identity-store/identity-store";
+import { UserStore } from "./data-stores/user-store/user-store";
 import { InvitationStore } from "./data-stores/invitation-store/invitation-store";
 import { RoomStore } from "./data-stores/room-store/room-store";
 
@@ -25,7 +25,7 @@ import { MultiRoomMessageStore } from "./data-stores/message-store/message-store
 class Orchestrator {
     acceptsMessagesFromStream: boolean = true;
 
-    private _identityClient: IIdentityClient;
+    private _userClient: IUserClient;
     
     private _chatHubClient: IChatHubClient;
     
@@ -33,10 +33,10 @@ class Orchestrator {
     private _invitationStore: IInvitationStore;
     private _roomStore: IRoomStore;
     private _messageStore: IMultiRoomMessageStore;
-    private _identityStore: IIdentityStore; 
+    private _userStore: IUserStore; 
 
-    get identityClient(): IIdentityClient {
-        return this._identityClient;
+    get userClient(): IUserClient {
+        return this._userClient;
     }
     get chatHubClient(): IChatHubClient {
         return this._chatHubClient;
@@ -50,24 +50,24 @@ class Orchestrator {
     get messageStore(): IMultiRoomMessageStore {
         return this._messageStore;
     }
-    get identityStore(): IIdentityStore {
-        return this._identityStore;
+    get userStore(): IUserStore {
+        return this._userStore;
     }
 
     constructor(
-        identityClient: IIdentityClient,
+        userClient: IUserClient,
         chatHubClient: IChatHubClient,
         invitationStore: IInvitationStore,
         roomStore: IRoomStore,
         messageStore: IMultiRoomMessageStore,
-        identityStore: IIdentityStore
+        userStore: IUserStore
     ) {
-        this._identityClient = identityClient;
+        this._userClient = userClient;
         this._chatHubClient = chatHubClient;
         this._invitationStore = invitationStore;
         this._roomStore = roomStore;
         this._messageStore = messageStore;
-        this._identityStore = identityStore;
+        this._userStore = userStore;
     }
 
 
@@ -93,13 +93,13 @@ class Orchestrator {
 
     async registerAndConnect(credentials: Credentials): Promise<void> {
         return this._authenticateAndConnect(
-            credentials, (credentials) => this.identityClient.registerAsync(credentials)
+            credentials, (credentials) => this.userClient.registerAsync(credentials)
         );
     }
     
     async logInAndConnect(credentials: Credentials): Promise<void> {
         return this._authenticateAndConnect(
-            credentials, (credentials) => this.identityClient.logInAsync(credentials)
+            credentials, (credentials) => this.userClient.logInAsync(credentials)
         );
     }
 
@@ -111,7 +111,7 @@ class Orchestrator {
     
     private async _authenticateAndConnect(
         credentials: Credentials,
-        method: (credentials: Credentials) => Promise<ApiResponse<Identity>>
+        method: (credentials: Credentials) => Promise<ApiResponse<User>>
     
     ): Promise<void> {
     
@@ -119,7 +119,7 @@ class Orchestrator {
         if (!authResult.success) {
             throw new Error(authResult.message);
         }
-        this.identityStore.overwrite(authResult.data);
+        this.userStore.overwrite(authResult.data);
         await this.connect();
     }
 
@@ -147,7 +147,7 @@ class Orchestrator {
 
 
 export const OrchestratorInstance = new Orchestrator(
-    new IdentityClient(),
+    new UserClient(),
     new ChatHubClient(
         new SignalR.HubConnectionBuilder()
             .withUrl(`${import.meta.env.BACKEND_URL ?? "http://localhost:5000"}/chat-hub`) //TODO remove fallback
@@ -161,7 +161,7 @@ export const OrchestratorInstance = new Orchestrator(
     new InvitationStore(),
     new RoomStore(),
     new MultiRoomMessageStore(300, 100),
-    new IdentityStore()
+    new UserStore()
 );
 
 

@@ -27,7 +27,7 @@ public partial class ChatHub(
     {
         try
         {
-            var identityIdString = Context
+            var userIdString = Context
                 .GetHttpContext()
                 ?.User
                 .Claims
@@ -35,14 +35,14 @@ public partial class ChatHub(
                 .Value
                 ?? throw new UnauthorizedException("User identifier (sub) is missing.");
             
-            var identityId = int.Parse(identityIdString);
+            var userId = int.Parse(userIdString);
             return new InitialChatInformation
             {
-                Rooms = await roomRepository.GetByMemberIdAsync(identityId),
-                Invitations = await invitationRepository.GetFullInvitationDataAsync(identityId)
+                Rooms = await roomRepository.GetByMemberIdAsync(userId),
+                Invitations = await invitationRepository.GetFullInvitationDataAsync(userId)
             };
         }
-        catch (IdentifierNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.User> ex)
         {
             throw new NotFoundException(ex.Message);
         }

@@ -1,8 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.UserModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.UserModel.Tokens;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Shared.Options;

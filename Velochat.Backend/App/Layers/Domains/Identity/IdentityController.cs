@@ -3,30 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using Velochat.Backend.App.Layers.DTOs;
 
 
-namespace Velochat.Backend.App.Layers.Domains.Identity;
+namespace Velochat.Backend.App.Layers.Domains.User;
 
 [ApiController]
 [Route("[controller]")]
-public class IdentityController(IIdentityOrchestration identityOrchestration) : ControllerBase
+public class UserController(IUserOrchestration userOrchestration) : ControllerBase
 {
     [HttpPost]
     [Route("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] Credentials credentials)
     {
-        var result = await identityOrchestration.RegisterAsync(credentials);
+        var result = await userOrchestration.RegisterAsync(credentials);
 
         SetJwtCookies(result.EncodedTokenPair);
-        return Ok(result.Identity);
+        return Ok(result.User);
     }
 
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> LogInAsync([FromBody] Credentials credentials)
     {
-        var result = await identityOrchestration.LogInAsync(credentials);
+        var result = await userOrchestration.LogInAsync(credentials);
         
         SetJwtCookies(result.EncodedTokenPair);
-        return Ok(result.Identity);
+        return Ok(result.User);
     }
 
     [HttpGet]
@@ -36,7 +36,7 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
         var refreshToken = Request.Cookies["refreshToken"] 
             ?? throw new UnauthorizedException("Refresh token not found.");
 
-        var tokenPair = await identityOrchestration.RefreshTokenAsync(refreshToken);
+        var tokenPair = await userOrchestration.RefreshTokenAsync(refreshToken);
         SetJwtCookies(tokenPair);
         return Ok();
     }
@@ -47,7 +47,7 @@ public class IdentityController(IIdentityOrchestration identityOrchestration) : 
     {
         var refreshToken = Request.Cookies["refreshToken"] 
             ?? throw new UnauthorizedException("Refresh token not found.");
-        await identityOrchestration.LogOutAsync(refreshToken);
+        await userOrchestration.LogOutAsync(refreshToken);
         return Ok();
     }
 

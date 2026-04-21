@@ -2,55 +2,55 @@ using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
-namespace Velochat.Backend.App.Layers.Domains.Identity;
+namespace Velochat.Backend.App.Layers.Domains.User;
 
-public class IdentityOrchestration(
-    IIdentityRepository identityRepository,
+public class UserOrchestration(
+    IUserRepository userRepository,
     IRefreshTokenStateRepository refreshTokenStateRepository,
     IPasswordService passwordService,
     IAuthTokenService authTokenService
-) : IIdentityOrchestration
+) : IUserOrchestration
 {
 
     public async Task<(
-        CompleteIdentity Identity, 
+        CompleteUser User, 
         EncodedTokenPair EncodedTokenPair
     )> RegisterAsync(Credentials credentials)
     {
         var passwordHash = passwordService.HashPassword(credentials.Password);
-        var identity = new Models.Identity
+        var user = new Models.User
         {
             Login = credentials.Login,
             PasswordHash = passwordHash
         };
 
-        var CompleteIdentity = await identityRepository.CreateAsync(identity);
+        var CompleteUser = await userRepository.CreateAsync(user);
 
-        var tokenPair = await GetTokenPairAsync(CompleteIdentity.Id);
-        return (CompleteIdentity, tokenPair);
+        var tokenPair = await GetTokenPairAsync(CompleteUser.Id);
+        return (CompleteUser, tokenPair);
     }
 
     public async Task<(
-        CompleteIdentity Identity, 
+        CompleteUser User, 
         EncodedTokenPair EncodedTokenPair
     )> LogInAsync(Credentials credentials)
     {
         var hashedPassword = passwordService.HashPassword(credentials.Password);
-        var matchedIdentity = await identityRepository
+        var matchedUser = await userRepository
             .GetByCredentialsAsync(credentials.Login, hashedPassword) 
             ?? throw new UnauthorizedException(
-                "Login and password do not match any identity."
+                "Login and password do not match any user."
             );
 
-        var tokenPair = await GetTokenPairAsync(matchedIdentity.Id);
-        return (matchedIdentity, tokenPair);
+        var tokenPair = await GetTokenPairAsync(matchedUser.Id);
+        return (matchedUser, tokenPair);
     }
 
 
     public async Task<EncodedTokenPair> RefreshTokenAsync(string refreshTokenString)
     {
-        var identityId = await CheckAndHandleRefreshTokenStatus(refreshTokenString);
-        return await GetTokenPairAsync(identityId);
+        var userId = await CheckAndHandleRefreshTokenStatus(refreshTokenString);
+        return await GetTokenPairAsync(userId);
     }
 
     public async Task LogOutAsync(string refreshTokenString)
@@ -59,9 +59,9 @@ public class IdentityOrchestration(
         await refreshTokenStateRepository.RevokeAsync(refreshTokenString);
     }
 
-    private async Task<EncodedTokenPair> GetTokenPairAsync(int identityId)
+    private async Task<EncodedTokenPair> GetTokenPairAsync(int userId)
     {
-        var tokens = authTokenService.GenerateTokenPair(identityId);
+        var tokens = authTokenService.GenerateTokenPair(userId);
         return authTokenService.EncodeTokenPair(tokens);
     }
 
@@ -71,7 +71,7 @@ public class IdentityOrchestration(
             var refreshToken = await authTokenService.ParseRefreshTokenAsync(
                 refreshTokenString
             );
-            var identityId = int.Parse(refreshToken.Subject);
+            var userId = int.Parse(refreshToken.Subject);
             var refreshTokenState = await refreshTokenStateRepository
                 .GetByTokenAsync(refreshTokenString)
                 ?? throw new UnauthorizedException("Invalid refresh token.");
@@ -80,12 +80,12 @@ public class IdentityOrchestration(
                 throw new UnauthorizedException("Refresh token has been revoked.");
             if (refreshTokenState.Status == RefreshTokenState.Used)
             {
-                await refreshTokenStateRepository.RevokeByIdentityIdAsync(identityId);
+                await refreshTokenStateRepository.RevokeByUserIdAsync(userId);
                 throw new UnauthorizedException(
-                    "Refresh token has been used. Revoking all tokens for identity."
+                    "Refresh token has been used. Revoking all tokens for user."
                 );
             }
-            if (refreshTokenState.Status == RefreshTokenState.Active) return identityId;
+            if (refreshTokenState.Status == RefreshTokenState.Active) return userId;
             throw new UnauthorizedException("Refresh token status is not valid.");
         }
         catch (Exception ex)

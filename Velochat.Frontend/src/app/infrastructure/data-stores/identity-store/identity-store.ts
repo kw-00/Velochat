@@ -1,17 +1,17 @@
-import type { Identity } from "../../models";
+import type { User } from "../../models";
 import { AbstractSubscribableScalar } from "../subscribable";
 
 
 
 
-export class IdentityStore extends AbstractSubscribableScalar<Identity | null> {
+export class UserStore extends AbstractSubscribableScalar<User | null> {
 
-    private _identity: Identity | null = null;
-    get(): Identity | null {
-        return this._identity;
+    private _user: User | null = null;
+    get(): User | null {
+        return this._user;
     }
-    modify(modder: (current: Identity | null) => Identity | null): void {
-        this._identity = modder(this._identity);
+    modify(modder: (current: User | null) => User | null): void {
+        this._user = modder(this._user);
         this._notify();
     }
 

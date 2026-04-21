@@ -3,17 +3,17 @@ using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
 
-public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityRepository
+public class UserRepository(NpgsqlDataSource dataSource) : IUserRepository
 {
-    public async Task<CompleteIdentity?> GetByIdAsync(int id)
+    public async Task<CompleteUser?> GetByIdAsync(int id)
     {
         var query = dataSource.CreateCommand(@"
-            SELECT id, login FROM identities WHERE id = @id;
+            SELECT id, login FROM users WHERE id = @id;
         ");
         query.Parameters.AddWithValue("id", id);
         await using var reader = await query.ExecuteReaderAsync();
         if (await reader.ReadAsync()) {
-            return new CompleteIdentity
+            return new CompleteUser
             {
                 Id = reader.GetInt32(0),
                 Login = reader.GetString(1),
@@ -21,19 +21,19 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
         }
         return null;
     }
-    public async Task<CompleteIdentity?> GetByCredentialsAsync(
+    public async Task<CompleteUser?> GetByCredentialsAsync(
         string login, string passwordHash
     )
     {
         var query = dataSource.CreateCommand(@"
-            SELECT id, login FROM identities
+            SELECT id, login FROM users
             WHERE login = @login AND password_hash = @passwordHash;
         ");
         query.Parameters.AddWithValue("login", login);
         query.Parameters.AddWithValue("passwordHash", passwordHash);
         await using var reader = await query.ExecuteReaderAsync();
         if (await reader.ReadAsync()) {
-            return new CompleteIdentity
+            return new CompleteUser
             {
                 Id = reader.GetInt32(0),
                 Login = reader.GetString(1),
@@ -41,22 +41,22 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
         }
         return null;
     }
-    public async Task<CompleteIdentity> CreateAsync(Identity identity)
+    public async Task<CompleteUser> CreateAsync(User user)
     {
         try
         { 
-            identity.EnsureInsertable();
+            user.EnsureInsertable();
             var query = dataSource.CreateCommand(@"
-                INSERT INTO identities (login, password_hash) 
+                INSERT INTO users (login, password_hash) 
                 VALUES (@login, @passwordHash) 
                 RETURNING id, login;
             ");
-            query.Parameters.AddWithValue("login", identity.Login);
-            query.Parameters.AddWithValue("passwordHash", identity.PasswordHash);
+            query.Parameters.AddWithValue("login", user.Login);
+            query.Parameters.AddWithValue("passwordHash", user.PasswordHash);
 
             await using var reader = await query.ExecuteReaderAsync();
             await reader.ReadAsync();
-            return new CompleteIdentity
+            return new CompleteUser
             {
                 Id = reader.GetInt32(0),
                 Login = reader.GetString(1),
@@ -65,7 +65,7 @@ public class IdentityRepository(NpgsqlDataSource dataSource) : IIdentityReposito
         catch (PostgresException ex)
         when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            throw new DuplicatePrimaryKeyException<Identity>(identity);
+            throw new DuplicatePrimaryKeyException<User>(user);
         }
     }
 }

@@ -1,18 +1,18 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.UserModel.Tokens.Jwt;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Models;
 
-namespace Velochat.Backend.App.Layers.Domains.Identity;
+namespace Velochat.Backend.App.Layers.Domains.User;
 
-public interface IIdentityOrchestration
+public interface IUserOrchestration
 {
     Task<(
-        CompleteIdentity Identity, 
+        CompleteUser User, 
         EncodedTokenPair EncodedTokenPair
     )> RegisterAsync(Credentials credentials);
 
     Task<(
-        CompleteIdentity Identity, 
+        CompleteUser User, 
         EncodedTokenPair EncodedTokenPair
     )> LogInAsync(Credentials credentials);
 

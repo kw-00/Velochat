@@ -7,9 +7,9 @@ public class HttpContextWrapper(HttpContext httpContext) : IHTTPContextWrapper
 {
     public HttpContext HttpContext { get; set; } = httpContext;
 
-    public int ClientIdentity { get
+    public int ClientUser { get
         {
-            var identityIdString 
+            var userIdString 
                 = HttpContext
                     .User
                     .Claims
@@ -18,11 +18,11 @@ public class HttpContextWrapper(HttpContext httpContext) : IHTTPContextWrapper
                         "User identifier (sub) is missing."
                     );
 
-            var identityIdIsInteger = int.TryParse(identityIdString, out var identityId);
-            if (!identityIdIsInteger) throw new UnauthorizedException(
+            var userIdIsInteger = int.TryParse(userIdString, out var userId);
+            if (!userIdIsInteger) throw new UnauthorizedException(
                 "User identifier (sub) is not an integer."
             );
-            return identityId;
+            return userId;
         }
     }
 }

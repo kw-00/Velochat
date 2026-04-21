@@ -25,14 +25,14 @@ public class RoomRepository(NpgsqlDataSource dataSource) : IRoomRepository
         return null;
     }
 
-    public async Task<IReadOnlyList<CompleteRoom>> GetByMemberIdAsync(int identityId)
+    public async Task<IReadOnlyList<CompleteRoom>> GetByMemberIdAsync(int userId)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, name, owner_id FROM rooms r
             INNER JOIN room_presences rp ON rp.room_id = r.id
-            WHERE rp.member_id = @identityId;
+            WHERE rp.member_id = @userId;
         ");
-        query.Parameters.AddWithValue("identityId", identityId);
+        query.Parameters.AddWithValue("userId", userId);
         await using var reader = await query.ExecuteReaderAsync();
         var rooms = new List<CompleteRoom>();
         while (await reader.ReadAsync())
@@ -47,14 +47,14 @@ public class RoomRepository(NpgsqlDataSource dataSource) : IRoomRepository
         return rooms;
     }
 
-    public async Task<IReadOnlyList<CompleteRoom>> GetByInviteeIdAsync(int identityId)
+    public async Task<IReadOnlyList<CompleteRoom>> GetByInviteeIdAsync(int userId)
     {
         var query = dataSource.CreateCommand(@"
             SELECT id, name, owner_id FROM rooms r
             INNER JOIN invitation i ON i.room_id = r.id
-            WHERE i.invitee_id = @identityId;
+            WHERE i.invitee_id = @userId;
         ");
-        query.Parameters.AddWithValue("identityId", identityId);
+        query.Parameters.AddWithValue("userId", userId);
         await using var reader = await query.ExecuteReaderAsync();
         var rooms = new List<CompleteRoom>();
         while (await reader.ReadAsync())

@@ -3,8 +3,10 @@ namespace Velochat.Backend.App.Layers.Models;
 public class CompleteFriendship : ICompleteModel
 {
     [PrimaryKey]
-    public int Subject1Id { get; init; }
+    public required int InitiatorId { get; init; }
 
     [PrimaryKey]
-    public int Subject2Id { get; init; }
+    public required int ReceiverId { get; init; }
+
+    public required bool Accepted { get; init; }
 }

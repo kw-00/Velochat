@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Velochat.Backend.App.Layers.Models;
 
-public class Identity : IMalleableModel
+public class User : IMalleableModel
 {
     [PrimaryKey]
     public int? Id { get; set; }

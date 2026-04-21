@@ -5,22 +5,24 @@ namespace Velochat.Backend.App.Layers.Models;
 public class Friendship : IMalleableModel
 {
     [PrimaryKey]
-    public int? Subject1Id { get; set; }
+    public int? InitiatorId { get; set; }
 
     [PrimaryKey]
-    public int? Subject2Id { get; set; }
+    public int? ReceiverId { get; set; }
 
-    [MemberNotNull(nameof(Subject1Id), nameof(Subject2Id))]
+    public bool? Accepted { get; set; }
+
+    [MemberNotNull(nameof(InitiatorId), nameof(ReceiverId))]
     public void EnsureIdentifiable()
     {
-        if (Subject1Id is null || Subject2Id is null) 
+        if (InitiatorId is null || ReceiverId is null) 
             throw new ModelNotIdentifiableException();
     }
 
-    [MemberNotNull(nameof(Subject1Id), nameof(Subject2Id))]
+    [MemberNotNull(nameof(InitiatorId), nameof(ReceiverId), nameof(Accepted))]
     public void EnsureInsertable()
     {
-        if (Subject1Id is not null || Subject2Id is not null) 
+        if (InitiatorId is null || ReceiverId is null || Accepted is null) 
             throw new ModelNotInsertableException();
     }
 }

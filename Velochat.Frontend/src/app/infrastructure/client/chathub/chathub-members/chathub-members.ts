@@ -9,15 +9,15 @@ export class ChatHubMembers implements IChatHubMembers {
         this._connection = connection;
     }
 
-    async invite(roomId: number, identityId: number): Promise<void> {
-        return this._connection.invoke("Invite", roomId, identityId);
+    async invite(roomId: number, userId: number): Promise<void> {
+        return this._connection.invoke("Invite", roomId, userId);
     }
 
-    async revokeInvitation(roomId: number, identityId: number): Promise<void> {
-        return this._connection.invoke("RevokeInvitation", roomId, identityId);
+    async revokeInvitation(roomId: number, userId: number): Promise<void> {
+        return this._connection.invoke("RevokeInvitation", roomId, userId);
     }
 
-    async kickMember(roomId: number, identityId: number): Promise<void> {
-        return this._connection.invoke("KickMember", roomId, identityId);
+    async kickMember(roomId: number, userId: number): Promise<void> {
+        return this._connection.invoke("KickMember", roomId, userId);
     }
 }

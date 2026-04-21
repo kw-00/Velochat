@@ -12,8 +12,8 @@ public partial class ChatHub
     [Authorize]
     public async Task<CompleteChatMessage> SendMessage(int roomId, string content)
     {
-        var identityId = GetClientIdentityId();
-        await EnsureRoomPresenceAsync(roomId, identityId);
+        var userId = GetClientUserId();
+        await EnsureRoomPresenceAsync(roomId, userId);
 
         CompleteChatMessage message;
         try
@@ -22,7 +22,7 @@ public partial class ChatHub
             message = await chatMessageRepository.CreateAsync(new ChatMessage
             {
                 RoomId = roomId,
-                AuthorId = identityId,
+                AuthorId = userId,
                 Content = content
             });
 
@@ -32,7 +32,7 @@ public partial class ChatHub
         {
             throw new NotFoundException(ex.Message);
         }
-        catch (IdentifierNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.User> ex)
         {
             throw new NotFoundException(ex.Message);
         }
@@ -45,9 +45,9 @@ public partial class ChatHub
         int oldestMessageOnClient
     )
     {
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         var roomId = currentChatroomCache.GetCurrentChatroom(Context.ConnectionId);
-        await EnsureRoomPresenceAsync(roomId, identityId);
+        await EnsureRoomPresenceAsync(roomId, userId);
 
         var messages = await chatMessageRepository.GetByRoomIdBeforeAsync(
             roomId, 
@@ -69,9 +69,9 @@ public partial class ChatHub
         int newestMessageOnClient
     ) 
     {
-        var identityId = GetClientIdentityId();
+        var userId = GetClientUserId();
         var roomId = currentChatroomCache.GetCurrentChatroom(Context.ConnectionId);
-        await EnsureRoomPresenceAsync(roomId, identityId);
+        await EnsureRoomPresenceAsync(roomId, userId);
 
         var messages = await chatMessageRepository.GetByRoomIdAfterAsync(
             roomId, 
@@ -93,8 +93,8 @@ public partial class ChatHub
         int roomId, int? newestMessageOnClient
     )
     {
-        var identityId = GetClientIdentityId();
-        await EnsureRoomPresenceAsync(roomId, identityId);
+        var userId = GetClientUserId();
+        await EnsureRoomPresenceAsync(roomId, userId);
         await UnsubscribeFromMessageFeed(
             currentChatroomCache.GetCurrentChatroom(Context.ConnectionId)
         );

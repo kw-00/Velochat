@@ -5,73 +5,67 @@ namespace Velochat.Backend.App.Layers.Infrastructure;
 public interface IFriendshipRepository
 {
     /// <summary>
-    /// Retrieves a friend request between two identities.
+    /// Retrieves a friend request between two users.
     /// </summary>
-    /// <param name="senderId"></param>
-    /// <param name="recipientId"></param>
+    /// <param name="firstUserId"></param>
+    /// <param name="secondUserId"></param>
     /// <returns>
     /// The matching friend request
     /// or null if not found.
     /// </returns>
-    Task<CompleteFriendRequest?> GetFriendRequestAsync(int senderId, int recipientId);
+    Task<CompleteFriendship?> GetFriendshipAsync(int firstUserId, int secondUserId);
 
     /// <summary>
-    /// Retrieves a list of identities that sent friend requests to the given identity.
+    /// Retrieves a list of users that have initiated 
+    /// friendship with the given user but are yet
+    /// to be accepted as friends.
     /// </summary>
-    /// <param name="identityId"></param>
+    /// <param name="userId"></param>
     /// <returns>
-    /// A list of matching identities.
+    /// A list of matching users.
     /// </returns>
-    Task<IReadOnlyList<CompleteIdentity>> GetFriendRequestSendersAsync(int identityId);
+    Task<IReadOnlyList<CompleteUser>> GetPendingInitiatorsAsync(int userId);
 
     /// <summary>
-    /// Retrieves a list of identities that are friends with the given identity.
+    /// Retrieves a list of users that are friends with the given user.
     /// </summary>
-    /// <param name="identityId"></param>
+    /// <param name="userId"></param>
     /// <returns>
-    /// A list of matching identities.
+    /// A list of matching users.
     /// </returns>
-    Task<IReadOnlyList<CompleteIdentity>> GetFriendshipsAsync(int identityId);
+    Task<IReadOnlyList<CompleteUser>> GetFriendsAsync(int userId);
 
     /// <summary>
-    /// Creates a friend request between two identities.
+    /// Creates a pending (not accepted) friendship between
+    /// initiator and receiver.
     /// </summary>
-    /// <param name="friendRequest"></param>
+    /// <param name="initiatorId"></param>
+    /// <param name="receiverId"></param>
     /// <returns>
-    /// A complete model of the recipient's identity.
+    /// A complete model of the receiver user.
     /// </returns>
-    /// <exception cref="ModelNotInsertableException">
-    /// Thrown when the friend request is not insertable.
-    /// </exception> 
-    /// <exception cref="IdentifierNotFoundException{Identity}">
-    /// Thrown when the sender or recipient does not exist.
+    /// <exception cref="IdentifierNotFoundException{User}">
+    /// Thrown when the sender or receiver does not exist.
     /// </exception>
-    /// <exception cref="MutualFriendRequestException">
-    /// Thrown when sender already received a request from recipient.
+    /// <exception cref="EquivalentAlreadyExistsException{Friendship}"> 
+    /// Thrown when a friendship between the initiator 
+    /// and receiver already exists, whether accepted, or not.
     /// </exception>
-    /// <exception cref="AlreadyFriendsException">
-    /// Thrown when sender and recipient are already friends.
-    /// </exception>
-    /// <exception cref="DuplicatePrimaryKeyException{FriendRequest}"> 
-    /// Thrown when a friend request from the same sender 
-    /// to the same recipient already exists.
-    /// </exception>
-    Task<CompleteIdentity?> CreateFriendRequestAsync(FriendRequest friendRequest);
+    Task<CompleteUser> CreatePendingAsync(int initiatorId, int receiverId);
 
 
     /// <summary>
-    /// Accepts a friend request between two identities.
-    /// Creates a friendship between them and removes the friend request.
+    /// Makes a friendship between two users accepted.
     /// </summary>
     /// <param name="friendRequest"></param>
     /// <returns>
-    /// A complete model of the recipient's identity.
+    /// A complete model of the receiver user.
     /// </returns>
-    /// <exception cref="IdentifierNotFoundException{FriendRequest}">
+    /// <exception cref="ModelNotIdentifiableException">
+    /// Thrown when the friend request is not identifiable.
+    /// </exception>
+    /// <exception cref="IdentifierNotFoundException{Friendship}">
     /// Thrown when the friend request does not exist.
     /// </exception>
-    /// <exception cref="AlreadyFriendsException">
-    /// Thrown when sender and recipient are already friends.
-    /// </exception>
-    Task<CompleteIdentity?> AcceptFriendRequestAsync(FriendRequest friendRequest);
+    Task<CompleteUser> AcceptAsync(Friendship friendRequest);
 }

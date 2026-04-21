@@ -1,4 +1,4 @@
-import type { Identity } from "../../models";
+import type { User } from "../../models";
 import type { ApiResponse } from "../response";
 
 
@@ -7,11 +7,11 @@ export type Credentials = {
     password: string;
 }
 
-export interface IIdentityClient
+export interface IUserClient
 {
-    registerAsync(credentials: Credentials): Promise<ApiResponse<Identity>>;
+    registerAsync(credentials: Credentials): Promise<ApiResponse<User>>;
 
-    logInAsync(credentials: Credentials): Promise<ApiResponse<Identity>>;
+    logInAsync(credentials: Credentials): Promise<ApiResponse<User>>;
 
     refreshTokenAsync(): Promise<ApiResponse<void>>;
 

@@ -9,23 +9,23 @@ namespace Velochat.Backend.App.Layers.Domains.Chat;
 public partial class ChatHub
 {
     [Authorize]
-    public async Task Invite(int roomId, int identityId)
+    public async Task Invite(int roomId, int userId)
     {
 
-        var clientIdentityId = GetClientIdentityId();
-        var inviteeIdentityId = identityId;
+        var clientUserId = GetClientUserId();
+        var inviteeUserId = userId;
 
         var room = await roomRepository.GetByIdAsync(roomId) 
             ?? throw new NotFoundException($"Room with ID of {roomId} not found.");
             
-        if (room.OwnerId != clientIdentityId) 
+        if (room.OwnerId != clientUserId) 
             throw new ForbiddenException("Client does not own the room.");
 
         try {
             var invitation = await invitationRepository.CreateAsync(new Invitation
             {
                 RoomId = roomId,
-                InviteeId = inviteeIdentityId
+                InviteeId = inviteeUserId
             });
             var invitationDTO = await invitationRepository
                 .GetFullInvitationDataAsync(invitation.ToModel())
@@ -40,7 +40,7 @@ public partial class ChatHub
             // User was already invited
             VelochatMetrics.Increment(VelochatMetrics.DuplicateInvitation);
         }
-        catch (IdentifierNotFoundException<Models.Identity> ex)
+        catch (IdentifierNotFoundException<Models.User> ex)
         {
             throw new RaceConditionException(
                 $"Client or invitee ID disappeared mid-operation. {ex.Message}"
@@ -55,40 +55,40 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task RevokeInvitation(int roomId, int identityId)
+    public async Task RevokeInvitation(int roomId, int userId)
     {
-        var clientIdentityId = GetClientIdentityId();
-        var inviteeIdentityId = identityId;
+        var clientUserId = GetClientUserId();
+        var inviteeUserId = userId;
 
         var room = await roomRepository.GetByIdAsync(roomId) 
             ?? throw new NotFoundException($"Room with ID of {roomId} not found.");
 
-        if (room.OwnerId != clientIdentityId) 
+        if (room.OwnerId != clientUserId) 
             throw new ForbiddenException("Client does not own the room.");
 
         await invitationRepository.DeleteAsync(new Invitation
         {
             RoomId = roomId,
-            InviteeId = inviteeIdentityId
+            InviteeId = inviteeUserId
         });
     }
 
     [Authorize]
-    public async Task KickMember(int roomId, int identityId)
+    public async Task KickMember(int roomId, int userId)
     {
-        var clientIdentityId = GetClientIdentityId();
-        var memberIdentityId = identityId;
+        var clientUserId = GetClientUserId();
+        var memberUserId = userId;
 
         var room = await roomRepository.GetByIdAsync(roomId) 
             ?? throw new NotFoundException($"Room with ID of {roomId} not found.");
         
-        if (room.OwnerId != clientIdentityId) 
+        if (room.OwnerId != clientUserId) 
             throw new ForbiddenException("Client does not own the room.");
 
         await roomPresenceRepository.DeleteAsync(new RoomPresence
         {
             RoomId = roomId,
-            MemberId = memberIdentityId
+            MemberId = memberUserId
         });
         await SendKickedAsync(roomId);
     }

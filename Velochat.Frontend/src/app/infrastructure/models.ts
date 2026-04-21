@@ -6,7 +6,7 @@ export type Invitation = {
     roomOwnerLogin: string;
 }
 
-export type Identity = {
+export type User = {
     id: number;
     login: string;
 }

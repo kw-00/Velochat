@@ -16,7 +16,7 @@ public static class RefreshTokenStateModelConverter
         => new()
         {
             Token = refreshTokenState.Token ?? throw new ModelNotCompleteException(),
-            IdentityId = refreshTokenState.IdentityId ?? throw new ModelNotCompleteException(),
+            UserId = refreshTokenState.UserId ?? throw new ModelNotCompleteException(),
             Status = refreshTokenState.Status ?? throw new ModelNotCompleteException()
         };
     
@@ -30,7 +30,7 @@ public static class RefreshTokenStateModelConverter
         => new()
         {
             Token = refreshTokenState.Token,
-            IdentityId = refreshTokenState.IdentityId,
+            UserId = refreshTokenState.UserId,
             Status = refreshTokenState.Status
         };
 }

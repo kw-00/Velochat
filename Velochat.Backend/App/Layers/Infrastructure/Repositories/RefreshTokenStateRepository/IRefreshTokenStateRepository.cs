@@ -41,10 +41,10 @@ public interface IRefreshTokenStateRepository
     Task RevokeAsync(string token);
 
     /// <summary>
-    /// Sets all refresh token states for an identity to revoked.
+    /// Sets all refresh token states for an user to revoked.
     /// </summary>
-    /// <param name="identityId"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    /// <exception cref="IdentifierNotFoundException{Identity}"></exception>
-    Task RevokeByIdentityIdAsync(int identityId);
+    /// <exception cref="IdentifierNotFoundException{User}"></exception>
+    Task RevokeByUserIdAsync(int userId);
 }

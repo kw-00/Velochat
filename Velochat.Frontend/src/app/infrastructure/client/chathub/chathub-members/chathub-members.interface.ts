@@ -2,8 +2,8 @@
 
 
 export interface IChatHubMembers {
-    invite(roomId: number, identityId: number): Promise<void>;
-    revokeInvitation(roomId: number, identityId: number): Promise<void>;
-    kickMember(roomId: number, identityId: number): Promise<void>;
+    invite(roomId: number, userId: number): Promise<void>;
+    revokeInvitation(roomId: number, userId: number): Promise<void>;
+    kickMember(roomId: number, userId: number): Promise<void>;
 }
 

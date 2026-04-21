@@ -1,22 +1,17 @@
 CREATE SCHEMA app;
 SEt search_path TO app;
 
-CREATE TABLE identities (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     login TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL
 );
 
-CREATE TABLE friend_requests (
-    sender_id INT NOT NULL,
-    recipient_id INT NOT NULL,
-    CONSTRAINT pk_invitations PRIMARY KEY (sender_id, recipient_id)
-);
-
 CREATE TABLE friendships (
-    subject_1_id INT NOT NULL,
-    subject_2_id INT NOT NULL,
-    CONSTRAINT pk_friendships PRIMARY KEY (subject_1_id, subject_2_id)
+    initiator_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    accepted BOOLEAN NOT NULL,
+    CONSTRAINT pk_invitations PRIMARY KEY (initiator_id, receiver_id)
 );
 
 CREATE TABLE room_presences (
@@ -40,34 +35,26 @@ CREATE TABLE chat_messages (
 
 CREATE TABLE refresh_token_states (
     token TEXT PRIMARY KEY,
-    identity_id INT NOT NULL,
+    user_id INT NOT NULL,
     status TEXT NOT NULL
 );
 
 /* Friendship */
-ALTER TABLE friend_requests ADD CONSTRAINT fk_friend_requests_sender_id
-    FOREIGN KEY (sender_id) REFERENCES identities (id)
+ALTER TABLE friendships ADD CONSTRAINT fk_friendships_initiator_id
+    FOREIGN KEY (initiator_id) REFERENCES users (id)
 ;
 
-ALTER TABLE friend_requests ADD CONSTRAINT fk_friend_requests_recipient_id
-    FOREIGN KEY (recipient_id) REFERENCES identities (id)
+ALTER TABLE friendships ADD CONSTRAINT fk_friendships_receiver_id
+    FOREIGN KEY (receiver_id) REFERENCES users (id)
 ;
 
-CREATE UNIQUE INDEX no_two_way_friend_requests ON friend_requests (
-    LEAST(sender_id, recipient_id), GREATEST(sender_id, recipient_id)
+ALTER TABLE friend_requests ADD CONSTRAINT fk_no_self_friendship
+    CHECK (sender_id != receiver_id)
+;
+
+CREATE UNIQUE INDEX unique_friendship ON friendships (
+    LEAST(initiator_id, receiver_id), GREATEST(initiator_id, receiver_id)
 );
-
-ALTER TABLE friendships ADD CONSTRAINT fk_friendships_subject_1_id
-    FOREIGN KEY (subject_1_id) REFERENCES identities (id)
-;
-
-ALTER TABLE friendships ADD CONSTRAINT fk_friendships_subject_2_id
-    FOREIGN KEY (subject_2_id) REFERENCES identities (id)
-;
-
-ALTER TABLE friendships ADD CONSTRAINT subject_order_check
-    CHECK (subject_1_id < subject_2_id)
-;
 
 /* Rooms */
 ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_room_id
@@ -75,11 +62,11 @@ ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_room_id
 ;
 
 ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_member_id
-    FOREIGN KEY (member_id) REFERENCES identities (id)
+    FOREIGN KEY (member_id) REFERENCES users (id)
 ;
 
 ALTER TABLE rooms ADD CONSTRAINT fk_rooms_owner_id
-    FOREIGN KEY (owner_id) REFERENCES identities (id)
+    FOREIGN KEY (owner_id) REFERENCES users (id)
 ;
 
 ALTER TABLE rooms ADD CONSTRAINT unique_owner_and_name 
@@ -92,12 +79,12 @@ ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_room_id
 ;
 
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_author_id
-    FOREIGN KEY (author_id) REFERENCES identities (id)
+    FOREIGN KEY (author_id) REFERENCES users (id)
 ;
 
 /* Refresh tokens */
-ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_identity_id
-    FOREIGN KEY (identity_id) REFERENCES identities (id)
+ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_user_id
+    FOREIGN KEY (user_id) REFERENCES users (id)
 ;
 
 ALTER TABLE refresh_token_states ADD CONSTRAINT refresh_token_states_status_check

@@ -12,13 +12,13 @@ public class RefreshTokenState : IMalleableModel
     [PrimaryKey]
     public string? Token { get; set; }
 
-    public int? IdentityId { get; set; }
+    public int? UserId { get; set; }
     public string? Status { get; set; }
 
-    [MemberNotNull(nameof(Token), nameof(IdentityId), nameof(Status))]
+    [MemberNotNull(nameof(Token), nameof(UserId), nameof(Status))]
     public void EnsureInsertable()
     {
-        if (Token is null || IdentityId is null || Status is null) throw new ModelNotInsertableException();
+        if (Token is null || UserId is null || Status is null) throw new ModelNotInsertableException();
     }
 
     [MemberNotNull(nameof(Token))]
