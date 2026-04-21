@@ -1,5 +1,4 @@
 using Npgsql;
-using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 
 namespace Velochat.Backend.App.Layers.Infrastructure;
