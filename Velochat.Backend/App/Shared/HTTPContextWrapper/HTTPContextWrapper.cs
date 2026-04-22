@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Velochat.Backend.App.Layers.Domains;
+using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.Shared;
 

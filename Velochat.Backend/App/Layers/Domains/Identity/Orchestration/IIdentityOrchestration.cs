@@ -1,4 +1,3 @@
-using System.UserModel.Tokens.Jwt;
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Models;
 

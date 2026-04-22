@@ -1,6 +1,7 @@
 using Velochat.Backend.App.Layers.DTOs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
+using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.Layers.Domains.User;
 

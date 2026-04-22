@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 using Velochat.Backend.App.Layers.DTOs;
+using Velochat.Backend.App.Shared.Exceptions;
 
 
 namespace Velochat.Backend.App.Layers.Domains.User;
