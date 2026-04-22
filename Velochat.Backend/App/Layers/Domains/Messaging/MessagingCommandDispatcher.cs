@@ -12,7 +12,7 @@ public class MessagingCommandDispatcher : CommandDispatcher
         {
             var content = args[0].MapTo<string>();
             return CommandResult.From(
-                await commands.SendMessage(session, content)
+                await commands.SendMessageAsync(session, content)
             );
         });
 
@@ -20,7 +20,7 @@ public class MessagingCommandDispatcher : CommandDispatcher
         {
             var oldestMessageOnClient = args[0].MapTo<int>(); 
             return CommandResult.From(
-                await commands.GoOlder(session, oldestMessageOnClient)
+                await commands.GoOlderAsync(session, oldestMessageOnClient)
             );
         });
 
@@ -28,7 +28,7 @@ public class MessagingCommandDispatcher : CommandDispatcher
         {
             var newestMessageOnClient = args[0].MapTo<int>(); 
             return CommandResult.From(
-                await commands.GoNewer(session, newestMessageOnClient)
+                await commands.GoNewerAsync(session, newestMessageOnClient)
             );
         });
 
@@ -37,13 +37,13 @@ public class MessagingCommandDispatcher : CommandDispatcher
             var toRoomId = args[0].MapTo<int>(); 
             var newestMessageOnClient = args[1].MapTo<int?>(); 
             return CommandResult.From(
-                await commands.SwitchFocus(session, toRoomId, newestMessageOnClient)
+                await commands.SwitchFocusAsync(session, toRoomId, newestMessageOnClient)
             );
         });
 
         Register("ZoneOut", async (session, args) =>
         {
-            await commands.ZoneOut(session);
+            await commands.ZoneOutAsync(session);
             return CommandResult.Empty();
         });
     }

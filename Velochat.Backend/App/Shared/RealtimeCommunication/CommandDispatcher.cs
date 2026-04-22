@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
+using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.Shared.RealtimeCommunication
 {
@@ -18,14 +19,33 @@ namespace Velochat.Backend.App.Shared.RealtimeCommunication
             try
             {
                 var handler = _handlers[command];
-                return await handler(realtimeSession, args);
+                try
+                {
+                    return await handler(realtimeSession, args);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is StatusCodeException scex)
+                    {
+                        return CommandResult.Error(scex);
+                    }
+                    else
+                    {
+                        return CommandResult.Error(
+                            new InternalServerErrorException(ex.Message)
+                        );
+                    }
+                }
             }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException(
-                    $"Command \"{command}\" not found."
+                return CommandResult.Error(
+                    new BadRequestException(
+                        $"Command \"{command}\" not found."
+                    )
                 );
             }
+
         }
 
         public void Register(

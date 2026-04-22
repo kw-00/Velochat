@@ -1,12 +1,12 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.SignalR;
+
 using Microsoft.Extensions.Options;
+using Velochat.Backend.App.Layers.Hubs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Layers.Models;
 using Velochat.Backend.App.Shared.Exceptions;
 using Velochat.Backend.App.Shared.Options;
 using Velochat.Backend.App.Shared.RealtimeCommunication;
-using Velochat.Backend.App.Shared.TypeHelpers;
+
 
 namespace Velochat.Backend.App.Layers.Domains.Messaging;
 

@@ -9,10 +9,10 @@ public interface IMessagingCommands
     /// Creates a new message in the currently selected room
     /// and broadcasts it.
     /// </summary>
-    /// <param name="session">The realtime session of the user sending the message.</param>
+    /// <param name="session">The session of the user sending the message.</param>
     /// <param name="content">The content of the message.</param>
     /// <returns>A complete model of the message sent.</returns>
-    Task<CompleteChatMessage> SendMessage(IRealtimeSession session, string content);
+    Task<CompleteChatMessage> SendMessageAsync(IRealtimeSession session, string content);
 
 
     /// <summary>
@@ -32,12 +32,12 @@ public interface IMessagingCommands
     /// 
     /// Hence the unsubscribing.
     /// </summary>
-    /// <param name="session">The realtime session of the user.</param>
+    /// <param name="session">The session of the user.</param>
     /// <param name="oldestMessageOnClient">
     /// The ID of oldest message on client.
     /// </param>
     /// <returns></returns>
-    Task<GoOlderResponse> GoOlder(IRealtimeSession session, int oldestMessageOnClient);
+    Task<GoOlderResponse> GoOlderAsync(IRealtimeSession session, int oldestMessageOnClient);
 
     /// <summary>
     /// Returns a DTO containing messages from the currently selected room,
@@ -54,12 +54,12 @@ public interface IMessagingCommands
     /// is now looking at new messags and wants to read any
     /// messages that come forth.
     /// </summary>
-    /// <param name="session">The realtime session of the user.</param>
+    /// <param name="session">The session of the user.</param>
     /// <param name="newestMessageOnClient">
     /// The ID of newest message on client.
     /// </param>
     /// <returns></returns>
-    Task<GoNewerResponse> GoNewer(IRealtimeSession session, int newestMessageOnClient);
+    Task<GoNewerResponse> GoNewerAsync(IRealtimeSession session, int newestMessageOnClient);
 
     /// <summary>
     /// Switches the client's focus to a different room.
@@ -78,7 +78,7 @@ public interface IMessagingCommands
     /// and replace it with the new messages.
     /// 
     /// </summary>
-    /// <param name="session">The realtime session of the user.</param>
+    /// <param name="session">The session of the user.</param>
     /// <param name="roomId">The ID of the room to switch to.</param>
     /// <param name="newestMessageOnClient">
     /// The ID of the newest message on client. 
@@ -88,7 +88,7 @@ public interface IMessagingCommands
     /// A DTO containing missed messages for the newly focused room
     /// and a flag that signifies whether all missed messages have been returned.
     /// </returns>
-    Task<SwitchRoomsResponse> SwitchFocus(
+    Task<SwitchRoomsResponse> SwitchFocusAsync(
         IRealtimeSession session, int roomId, int? newestMessageOnClient
     );
 
@@ -96,7 +96,7 @@ public interface IMessagingCommands
     /// Unsubscribes the client from the currently selected room's message feed
     /// and clears the client's current room cache.
     /// </summary>
-    /// <param name="session">The realtime session of the user.</param>
+    /// <param name="session">The session of the user.</param>
     /// <returns></returns>
-    Task ZoneOut(IRealtimeSession session);
+    Task ZoneOutAsync(IRealtimeSession session);
 }
