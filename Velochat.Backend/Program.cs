@@ -3,7 +3,7 @@ using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Velochat.Backend.App.Layers.Domains.User;
-using Velochat.Backend.App.Layers.GlobalHub;
+using Velochat.Backend.App.Layers.Hubs;
 using Velochat.Backend.App.Layers.Infrastructure;
 using Velochat.Backend.App.Shared.Auth;
 using Velochat.Backend.App.Shared.Metrics;
