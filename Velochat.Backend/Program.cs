@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using Velochat.Backend.App.Layers.Domains.User;
-using Velochat.Backend.App.Layers.Hubs;
-using Velochat.Backend.App.Layers.Infrastructure;
+using Velochat.Backend.App.API.Domains.Identity;
+using Velochat.Backend.App.API.Realtime;
+using Velochat.Backend.App.Infrastructure.Repositories;
 using Velochat.Backend.App.Shared.Auth;
 using Velochat.Backend.App.Shared.Metrics;
 using Velochat.Backend.App.Shared.Options;
@@ -12,7 +12,7 @@ using Velochat.Backend.App.Shared.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Learn more about configuring Ope.API.Domains.at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));

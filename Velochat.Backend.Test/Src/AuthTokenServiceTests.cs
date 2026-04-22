@@ -3,8 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.UserModel.Tokens;
-using Velochat.Backend.App.Layers.DTOs;
-using Velochat.Backend.App.Layers.Infrastructure;
+using Velochat.Backend.App.Infrastructure.DTOs;
+using Velochat.Backend.App.Infrastructure.Repositories;
 using Velochat.Backend.App.Shared.Options;
 
 namespace Velochat.Backend.Test.Src;

@@ -1,0 +1,1 @@
+namespace Velochat.Backend.App.API.Domains.Rooms;
