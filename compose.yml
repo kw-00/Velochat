@@ -43,6 +43,13 @@ services:
       POSTGRES_PASSWORD: velochat
       POSTGRES_DB: velochat
 
+  # db__cron:
+  #   build:
+  #     context: ./Velochat.Database.Cron
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   depends_on:
+  #     - db
 
 volumes:
   pgdata:

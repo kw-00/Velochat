@@ -17,7 +17,6 @@ public static class RoomModelConverter
     {
         Id = room.Id ?? throw new ModelNotCompleteException(),
         Name = room.Name ?? throw new ModelNotCompleteException(),
-        OwnerId = room.OwnerId ?? throw new ModelNotCompleteException()
     };
 
 
@@ -31,6 +30,5 @@ public static class RoomModelConverter
     {
         Id = room.Id,
         Name = room.Name,
-        OwnerId = room.OwnerId
     };
 }

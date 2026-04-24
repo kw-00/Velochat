@@ -1,4 +1,4 @@
-namespace Velochat.Backend.App.Infrastructure.Repositories;
+namespace Velochat.Backend.App.Infrastructure.Persistence;
 
 public interface IPasswordService
 {

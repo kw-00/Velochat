@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.UserModel.Tokens;
 using Velochat.Backend.App.Infrastructure.DTOs;
-using Velochat.Backend.App.Infrastructure.Repositories;
+using Velochat.Backend.App.Infrastructure.Persistence;
 using Velochat.Backend.App.Shared.Options;
 
 namespace Velochat.Backend.Test.Src;

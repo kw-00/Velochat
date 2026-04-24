@@ -1,11 +1,4 @@
 
-export type Invitation = {
-    roomId: number;
-    roomName: string;
-    roomOwnerId: number;
-    roomOwnerLogin: string;
-}
-
 export type User = {
     id: number;
     login: string;
@@ -14,7 +7,6 @@ export type User = {
 export type Room = {
     id: number;
     name: string;
-    ownerId: number;
 }
 
 export type ChatMessage = {

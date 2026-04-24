@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Velochat.Backend.App.Infrastructure.Repositories;
+namespace Velochat.Backend.App.Infrastructure.Persistence;
 
 public class PasswordService : IPasswordService
 {

@@ -16,14 +16,13 @@ CREATE TABLE friendships (
 
 CREATE TABLE room_presences (
     room_id INT NOT NULL,
-    member_id INT NOT NULL,
-    CONSTRAINT pk_room_presences PRIMARY KEY (room_id, member_id)
+    user_id INT NOT NULL,
+    CONSTRAINT pk_room_presences PRIMARY KEY (room_id, user_id)
 );
 
 CREATE TABLE rooms (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
-    owner_id INT NOT NULL
+    name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE chat_messages (
@@ -48,41 +47,50 @@ ALTER TABLE friendships ADD CONSTRAINT fk_friendships_receiver_id
     FOREIGN KEY (receiver_id) REFERENCES users (id)
 ;
 
-ALTER TABLE friend_requests ADD CONSTRAINT fk_no_self_friendship
-    CHECK (sender_id != receiver_id)
+ALTER TABLE friendships ADD CONSTRAINT friendships_no_self_friendship
+    CHECK (initiator_id != receiver_id)
 ;
 
 CREATE UNIQUE INDEX unique_friendship ON friendships (
     LEAST(initiator_id, receiver_id), GREATEST(initiator_id, receiver_id)
 );
 
-/* Rooms */
+/* Room presences */
 ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_room_id
     FOREIGN KEY (room_id) REFERENCES rooms (id)
 ;
 
-ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_member_id
-    FOREIGN KEY (member_id) REFERENCES users (id)
+ALTER TABLE room_presences ADD CONSTRAINT fk_room_presences_user_id
+    FOREIGN KEY (user_id) REFERENCES users (id)
 ;
 
-ALTER TABLE rooms ADD CONSTRAINT fk_rooms_owner_id
-    FOREIGN KEY (owner_id) REFERENCES users (id)
-;
+/* TODO Replace the trigger with cron job cleanup */
+CREATE OR REPLACE FUNCTION fn_trg_room_presences_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM room_presences WHERE room_id = OLD.room_id) THEN
+        DELETE FROM rooms WHERE id = OLD.room_id;
+    END IF;
+    RETURN NEW;
+END;
+$$LANGUAGE plpgsql;
 
-ALTER TABLE rooms ADD CONSTRAINT unique_owner_and_name 
-    UNIQUE (owner_id, name)
-;
+CREATE OR REPLACE TRIGGER trg_room_presences_delete
+ON room_presences
+AFTER DELETE
+EXECUTE FUNCTION fn_trg_room_presences_delete();
 
-/* Chat */
+/* Chat messages */
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_room_id
     FOREIGN KEY (room_id) REFERENCES rooms (id)
+    ON DELETE CASCADE
 ;
 
 ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_messages_author_id
     FOREIGN KEY (author_id) REFERENCES users (id)
 ;
 
-/* Refresh tokens */
+/* Refresh token states */
 ALTER TABLE refresh_token_states ADD CONSTRAINT fk_refresh_token_states_user_id
     FOREIGN KEY (user_id) REFERENCES users (id)
 ;

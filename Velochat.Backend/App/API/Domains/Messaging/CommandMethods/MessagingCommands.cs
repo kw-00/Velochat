@@ -1,11 +1,12 @@
 
 using Microsoft.Extensions.Options;
-using Velochat.Backend.App.API.Realtime;
-using Velochat.Backend.App.Infrastructure.Repositories;
+using Velochat.Backend.App.Infrastructure.Persistence;
 using Velochat.Backend.App.Infrastructure.Models;
 using Velochat.Backend.App.Shared.Exceptions;
 using Velochat.Backend.App.Shared.Options;
 using Velochat.Backend.App.API.Realtime.RPCManagement;
+using Velochat.Backend.App.API.Realtime.Session;
+using Velochat.Backend.App.API.Realtime.Channels;
 
 
 namespace Velochat.Backend.App.API.Domains.Messaging;
@@ -14,7 +15,8 @@ public class MessagingCommands(
     IOptions<ChatOptions> chatOptions,
     ChatMessageRepository chatMessageRepository,
     RoomPresenceRepository roomPresenceRepository,
-    RoomFocusCache focusedRoomCache
+    RoomFocusCache focusedRoomCache,
+    FullRoomUpdateChannels fullRoomUpdateChannels
 )
 {
     public async Task<CompleteChatMessage> SendMessage(
@@ -36,7 +38,7 @@ public class MessagingCommands(
                 Content = content
             });
 
-            await SendMessageReceivedAsync(session, message);
+            await fullRoomUpdateChannels.BroadcastMessage(session, message);
         }
         catch (IdentifierNotFoundException<Room> ex)
         {
@@ -135,23 +137,12 @@ public class MessagingCommands(
         focusedRoomCache.ClearFocus(session.ConnectionId);
     }
 
-    private static async Task SendMessageReceivedAsync(
-        IRealtimeSession session, CompleteChatMessage message
-    )
-    {
-        var channel = ChannelCategories.MessageFeed.GetChannel(message.RoomId);
-        await session.BroadcastAsync(
-            channel,
-            ["MessageReceived", message]
-        );
-    }
-
     private async Task EnsureRoomPresenceAsync(int roomId, int userId)
     {
         _ = await roomPresenceRepository.GetAsync(new RoomPresence
         {
             RoomId = roomId,
-            MemberId = userId
+            UserId = userId
         })
         ?? throw new ForbiddenException("Client is not in the room.");
     }
@@ -159,14 +150,13 @@ public class MessagingCommands(
     private async Task SubscribeToMessageFeed(IRealtimeSession session)
     {
         var focusedRoomId = focusedRoomCache.GetFocusedRoom(session.ConnectionId);
-        await session
-            .SubscribeAsync(ChannelCategories.MessageFeed.GetChannel(focusedRoomId));
+        await fullRoomUpdateChannels.Subscribe(session, focusedRoomId);
     }
+
     private async Task UnsubscribeFromMessageFeed(IRealtimeSession session)
     {
         var focusedRoomId = focusedRoomCache.TryGetFocusedRoom(session.ConnectionId);
         if (focusedRoomId is null) return;
-        await session
-            .UnsubscribeAsync(ChannelCategories.MessageFeed.GetChannel(focusedRoomId));
+        await fullRoomUpdateChannels.Unsubscribe(session, focusedRoomId.Value);
     }
 }

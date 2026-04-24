@@ -1,9 +1,8 @@
 using System.Collections.Concurrent;
-using Velochat.Backend.App.API.Realtime;
+using Velochat.Backend.App.API.Realtime.Session;
 using Velochat.Backend.App.Shared.Exceptions;
-using Velochat.Backend.App.API.Realtime.RPCManagement;
 
-namespace Velochat.Backend.App.API.Domains.Messaging;
+namespace Velochat.Backend.App.API.Realtime.RPCManagement;
 
 /// <summary>
 /// Cache for which group each connection is assigned to.

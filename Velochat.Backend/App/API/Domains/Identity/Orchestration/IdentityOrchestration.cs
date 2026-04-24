@@ -1,5 +1,5 @@
 using Velochat.Backend.App.Infrastructure.DTOs;
-using Velochat.Backend.App.Infrastructure.Repositories;
+using Velochat.Backend.App.Infrastructure.Persistence;
 using Velochat.Backend.App.Infrastructure.Services;
 using Velochat.Backend.App.Infrastructure.Models;
 using Velochat.Backend.App.Shared.Exceptions;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Velochat.Backend.App.API.Domains.Identity;
 using Velochat.Backend.App.API.Realtime;
-using Velochat.Backend.App.Infrastructure.Repositories;
+using Velochat.Backend.App.Infrastructure.Persistence;
 using Velochat.Backend.App.Shared.Auth;
 using Velochat.Backend.App.Shared.Metrics;
 using Velochat.Backend.App.Shared.Options;
