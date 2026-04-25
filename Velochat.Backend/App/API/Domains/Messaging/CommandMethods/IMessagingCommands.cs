@@ -1,5 +1,6 @@
 using Velochat.Backend.App.Infrastructure.Models;
 using Velochat.Backend.App.API.Realtime.RPCManagement;
+using Velochat.Backend.App.API.Realtime.Session;
 
 namespace Velochat.Backend.App.API.Domains.Messaging;
 

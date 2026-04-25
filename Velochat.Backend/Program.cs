@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using Velochat.Backend.App.API.Auth;
 using Velochat.Backend.App.API.Domains.Identity;
 using Velochat.Backend.App.API.Realtime;
 using Velochat.Backend.App.Infrastructure.Persistence;
-using Velochat.Backend.App.Shared.Auth;
+using Velochat.Backend.App.Infrastructure.Services;
 using Velochat.Backend.App.Shared.Metrics;
 using Velochat.Backend.App.Shared.Options;
 
@@ -28,11 +29,12 @@ builder.Services.AddSingleton(sp =>
 });
 
 // Repositories
-builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenStateRepository, RefreshTokenStateRepository>();
 builder.Services.AddScoped<IRoomPresenceRepository, RoomPresenceRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IRefreshTokenStateRepository, RefreshTokenStateRepository>();
 // Services
 builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();

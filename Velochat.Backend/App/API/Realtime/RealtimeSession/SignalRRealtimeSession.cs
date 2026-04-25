@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
-using Velochat.Backend.App.Shared.Auth;
+using Velochat.Backend.App.API.Auth;
 using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.API.Realtime.Session;

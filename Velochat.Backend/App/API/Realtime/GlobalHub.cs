@@ -3,15 +3,17 @@ using Microsoft.AspNetCore.SignalR;
 using Velochat.Backend.App.API.Domains.Friendship;
 using Velochat.Backend.App.API.Domains.Messaging;
 using Velochat.Backend.App.API.Domains.Rooms;
+using Velochat.Backend.App.API.Realtime.Channels;
 using Velochat.Backend.App.API.Realtime.RPCManagement;
-using Velochat.Backend.App.Shared.Auth;
+using Velochat.Backend.App.API.Realtime.Session;
 
 namespace Velochat.Backend.App.API.Realtime;
 
 public sealed class GlobalHub(
     MessagingCommandDispatcher messagingCommandDispatcher,
     FriendshipCommandDispatcher friendshipCommandDispatcher,
-    RoomsCommandDispatcher roomsCommandDispatcher
+    RoomsCommandDispatcher roomsCommandDispatcher,
+    UserNotificationChannels userNotificationChannels
 ) : Hub
 {
     public static event Action<SignalRRealtimeSession>? OnConnectedAsyncEvent;
@@ -37,10 +39,7 @@ public sealed class GlobalHub(
     {
         await base.OnConnectedAsync();
         var userId = Session.UserId;
-        await Groups.AddToGroupAsync(
-            Context.ConnectionId, 
-            ChannelCategories.Users.GetChannel(userId)
-        );
+        await userNotificationChannels.Subscribe(Session, userId);
         OnConnectedAsyncEvent?.Invoke(new SignalRRealtimeSession(this));
     }
 

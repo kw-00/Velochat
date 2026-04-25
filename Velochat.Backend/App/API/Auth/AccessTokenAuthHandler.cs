@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Velochat.Backend.App.Infrastructure.Services;
 
-namespace Velochat.Backend.App.Shared.Auth;
+namespace Velochat.Backend.App.API.Auth;
 
 public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

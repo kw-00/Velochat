@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Velochat.Backend.App.Shared.Exceptions;
 
-namespace Velochat.Backend.App.Shared.Auth;
+namespace Velochat.Backend.App.API.Auth;
 
 public static class IdentityInfoExtraction
 {

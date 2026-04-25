@@ -1,4 +1,4 @@
-using System.UserModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Velochat.Backend.App.Infrastructure.DTOs;
 

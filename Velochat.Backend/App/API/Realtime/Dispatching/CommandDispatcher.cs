@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
+using Velochat.Backend.App.API.Realtime.Session;
 using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.API.Realtime.RPCManagement

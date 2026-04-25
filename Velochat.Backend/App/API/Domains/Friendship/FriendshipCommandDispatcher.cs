@@ -24,9 +24,8 @@ public class FriendshipCommandDispatcher : CommandDispatcher
         Register("Request", async (session, args) =>
         {
             var userId = args[0].MapTo<int>(); 
-            return CommandResult.From(
-                await commands.RequestAsync(session, userId)
-            );
+            await commands.RequestAsync(session, userId);
+            return CommandResult.Empty();
         });
 
         Register("Accept", async (session, args) =>
