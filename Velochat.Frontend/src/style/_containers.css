@@ -6,13 +6,21 @@
     --containers-border-box-shadow: inset 0 0 0rem 0.05rem rgb(59, 59, 59);
 }
 
-.surface, .panel, .frame {
-    background: rgb(22, 22, 22);
-    box-shadow: var(--containers-border-box-shadow);
+.page {
+    background: rgb(10, 10, 10);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.panel {
+.panel, .panel-emphasized {
+    background: rgb(22, 22, 22);
+    box-shadow: var(--containers-border-box-shadow);
     padding: 0.7rem;
+}
+
+.panel-emphasized {
+    background: rgb(0, 7, 39);
 }
 
 .frame {

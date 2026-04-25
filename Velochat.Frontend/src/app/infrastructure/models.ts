@@ -15,3 +15,8 @@ export type ChatMessage = {
     authorId: number;
     content: string;
 }
+
+export type Credentials = {
+    login: string;
+    password: string;
+}

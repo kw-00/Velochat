@@ -9,6 +9,34 @@
     flex-direction: row;
 }
 
+.jb {
+    justify-content: space-between;
+}
+
+.ja {
+    justify-content: space-around;
+}
+
+.je {
+    justify-content: space-evenly;
+}
+
+.jc {
+    justify-content: center;
+}
+
+.ac {
+    align-items: center;
+}
+
+.as {
+    align-items: start;
+}
+
+ae {
+    align-items: end;
+}
+
 .grow {
     flex-grow: 1;
 }

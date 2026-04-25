@@ -1,25 +1,29 @@
-import MainPanel from './app/ui/MainPanel';
+
+
+
 import 'normalize.css';
 import 'reset.css';
 import '@/style/style.css';
 import "@/dom-helpers/element-extensions";
-import { OrchestratorInstance } from './app/infrastructure/orchestrator';
+import Dashboard from "./app/ui/pages/dashboard/Dashboard";
+import LoginPage from "./app/ui/pages/login/LoginPage";
+import RegisterPage from "./app/ui/pages/register/RegisterPage";
+import { InternalNavigation } from "./internal-navigation";
 
-document.getElementById('app')?.append(
-	MainPanel()
-);
+const appElement = document.getElementById('app');
+if (appElement === null) throw new Error("App element not found");
 
 
+InternalNavigation.register("/dashboard", () => {
+	appElement.replaceChildren(Dashboard());
+});
 
-const add = () => {
-	OrchestratorInstance.invitationStore.add({
-		roomId: 1,
-		roomName: "string",
-		roomOwnerId: 1,
-		roomOwnerLogin: "string"
-	});
-	setTimeout(add, 1000);
-};
+InternalNavigation.register("/login", () => {
+	appElement.replaceChildren(LoginPage());
+});
 
-add();
+InternalNavigation.register("/register", () => {
+	appElement.replaceChildren(RegisterPage());
+});
 
+InternalNavigation.resolve();
