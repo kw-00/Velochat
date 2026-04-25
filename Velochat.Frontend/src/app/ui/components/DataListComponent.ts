@@ -1,21 +1,33 @@
-import type { DataElement } from "./DataComponent";
+import type { DataComponentType } from "./DataComponent";
 
 
 
 
+type DataListComponentType<
+    TData, 
+    TElement extends HTMLElement
 
+> = TElement & {
+    capacity: number;
+    appendData(...data: TData[]): void;
+    prependData(...data: TData[]): void;
+    cutStart(): void;
+    cutEnd(): void;
+    reset(data: TData[]): void;
+    sort(by?: ((el1: TData, el2: TData) => number)): void;
+};
 
 export default function DataListComponent<
     TData, 
     TTag extends keyof HTMLElementTagNameMap,
-    TItemElement extends DataElement<TData, HTMLElementTagNameMap[TTag]>
+    TItemElement extends DataComponentType<TData, HTMLElementTagNameMap[TTag]>
 >(
     tag: TTag,
     elementFactory: (data: TData) => TItemElement,
     capacity: number
 ) {
     const element = document
-        .createElement(tag) as DataListElement<TData, HTMLElementTagNameMap[TTag]>;
+        .createElement(tag) as DataListComponentType<TData, HTMLElementTagNameMap[TTag]>;
 
     element.capacity = capacity;
 
@@ -66,16 +78,3 @@ export default function DataListComponent<
 }
 
 
-type DataListElement<
-    TData, 
-    TElement extends HTMLElement
-
-> = TElement & {
-    capacity: number;
-    appendData(...data: TData[]): void;
-    prependData(...data: TData[]): void;
-    cutStart(): void;
-    cutEnd(): void;
-    reset(data: TData[]): void;
-    sort(by?: ((el1: TData, el2: TData) => number)): void;
-}

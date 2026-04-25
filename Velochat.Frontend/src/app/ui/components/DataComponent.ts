@@ -1,6 +1,9 @@
 
 
 
+export type DataComponentType<T, TElement extends HTMLElement> = TElement & {
+    data: T;
+}
 
 export default function DataComponent<
     TData, 
@@ -9,11 +12,7 @@ export default function DataComponent<
     data: TData, tag: TTag
 ) {
     const result = document
-        .createElement(tag) as DataElement<TData, HTMLElementTagNameMap[TTag]>;
+        .createElement(tag) as DataComponentType<TData, HTMLElementTagNameMap[TTag]>;
     result.data = data;
     return result;
-}
-
-export type DataElement<T, TElement extends HTMLElement> = TElement & {
-    data: T;
 }
