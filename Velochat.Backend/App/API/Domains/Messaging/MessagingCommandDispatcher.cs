@@ -32,7 +32,7 @@ public class MessagingCommandDispatcher : CommandDispatcher
             );
         });
 
-        Register("SwitchFocusedRoom", async (session, args) =>
+        Register("SwitchFocus", async (session, args) =>
         {
             var toRoomId = args[0].MapTo<int>(); 
             var newestMessageOnClient = args[1].MapTo<int?>(); 
