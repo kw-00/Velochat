@@ -1,4 +1,5 @@
 import { MessagingHubClient } from "./hub/messaging";
+import type { RealtimeConnection } from "./hub/realtime-connection";
 import type { ServerEvents } from "./hub/server-events";
 import type { ChatMessage } from "./models";
 import { LimitedList } from "./observable/limited-list";
@@ -22,29 +23,32 @@ export class MessageManager {
     private _rooms = new Map<number, Array<ChatMessage>>();
     private _currentRoomMessages = new LimitedList<ChatMessage>(300);
     private _listeners: MessageManagerListenerContainer = {
-        appended: new Set(),
-        prepended: new Set(),
-        overwritten: new Set()
+        "appended": new Set(),
+        "prepended": new Set(),
+        "overwritten": new Set()
     };
 
     private _disposeListeners = new Set<() => void>();
 
     constructor(
-        messagingHubClient: MessagingHubClient,
-        serverEvents: ServerEvents
+        realtimeConnection: RealtimeConnection,
+        serverEvents: ServerEvents,
+        messagingHubClient: MessagingHubClient
     ) {
         this._messagingClient = messagingHubClient;
+        
+        for (const key in this._listeners) {
+            // @ts-expect-error key type widened to string
+            this._currentRoomMessages.on(key, (...args) => this._fire(key, ...args));
+        };
+
         this._onDispose(
             serverEvents.on("message", m => {
                 if (m.roomId !== this._selection) return;
                 this._currentRoomMessages.append(m);
             })
         );
-
-        for (const key in this._listeners) {
-            // @ts-expect-error key type widened to string
-            this._currentRoomMessages.on(key, (...args) => this._fire(key, ...args));
-        };
+        realtimeConnection.onreconnected(() => this._reconcileWithServerAsync());
     }
 
     on<K extends keyof MessageManagerEventMap>(
@@ -140,6 +144,11 @@ export class MessageManager {
 
     private _onDispose(callback: () => void) {
         this._disposeListeners.add(callback);
+    }
+
+    private _reconcileWithServerAsync() {
+        if (this._selection === null) return;
+        this.switchAsync(this._selection);
     }
 
     private _cacheCurrentMessages() {

@@ -3,6 +3,7 @@
 type LimitedListEventMap<T> = {
     "appended": (appended: T[], cutStart: T[]) => void;
     "prepended": (prepended: T[], cutEnd: T[]) => void;
+    "removed": (removed: T[]) => void;
     "overwritten": (before: T[], after: T[]) => void;
 }
 
@@ -17,6 +18,7 @@ export class LimitedList<T> {
     private _listeners: LimitedListListenerContainer<T> = {
         "appended": new Set(),
         "prepended": new Set(),
+        "removed": new Set(),
         "overwritten": new Set()
     };
 
@@ -46,6 +48,12 @@ export class LimitedList<T> {
         this._data.unshift(...elements);
         const cut = this._cutEnd();
         this._fire("prepended", elements, cut);
+    }
+
+    remove(predicate: (el: T) => boolean): void {
+        const removed = this._data.filter(predicate);
+        this._data = this._data.filter(el => !predicate(el));
+        this._fire("removed", removed);
     }
     
     overwrite(newElements: T[], cutFrom: "start" | "end"): void {
