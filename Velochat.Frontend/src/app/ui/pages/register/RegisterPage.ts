@@ -13,7 +13,7 @@ export default function RegisterPage() {
             e.preventDefault();
             const { login, password } = credentials;
             const registrationResult = await ServerInterface.singleton
-                .identity
+                .auth
                 .registerAsync({ login, password });
 
             if (!registrationResult.success) {
@@ -22,7 +22,7 @@ export default function RegisterPage() {
             }
 
             const authenticationResult = await ServerInterface.singleton
-                .identity
+                .auth
                 .logInAsync({ login, password });
 
             if (authenticationResult.success) {

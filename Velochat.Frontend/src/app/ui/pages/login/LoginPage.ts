@@ -15,7 +15,7 @@ export default function LoginPage() {
             e.preventDefault();
             const {login, password} = credentials;
             const authenticationResult = await ServerInterface.singleton
-                .identity
+                .auth
                 .logInAsync({login, password});
                 
             if (authenticationResult.success) {
