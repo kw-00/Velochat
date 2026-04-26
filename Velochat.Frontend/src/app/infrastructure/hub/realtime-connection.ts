@@ -10,6 +10,7 @@ export class RealtimeConnection {
         this._connection = connection;
     }
 
+
     /** Starts the connection.
      *
      * @returns {Promise<void>} A Promise that resolves when the connection 

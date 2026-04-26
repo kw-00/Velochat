@@ -26,7 +26,7 @@ export default function RegisterPage() {
                 .logInAsync({ login, password });
 
             if (authenticationResult.success) {
-                InternalNavigation.goTo(internalPaths.dashboard);
+                InternalNavigation.goTo(internalPaths.chat);
             } else {
                 alert(authenticationResult.message);
             }            

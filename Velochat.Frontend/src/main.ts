@@ -16,7 +16,7 @@ if (appElement === null) throw new Error("App element not found");
 
 InternalNavigation.register("/", async () => {
 	const refreshResponse = await ServerInterface.singleton
-		.identity
+		.auth
 		.refreshTokenAsync();
 
 	if (refreshResponse.success) {
