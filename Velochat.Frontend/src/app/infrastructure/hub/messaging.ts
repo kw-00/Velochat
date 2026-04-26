@@ -16,7 +16,7 @@ export type GoOlderResponse = {
 
 export type SwitchRoomsResponse = {
     messages: ChatMessage[];
-    IsContinuity: boolean;
+    isContinuity: boolean;
 }
 
 const DISPATCHER_NAME = "Messaging";

@@ -1,6 +1,7 @@
-import { internalPaths } from "@/internal-navigation";
+import { InternalNavigation, internalPaths } from "@/internal-navigation";
 import CredentialForm from "../../components/CredentialForm";
 import InternalLink from "../../components/InternalLink";
+import { ServerInterface } from "@/app/infrastructure/server-interface";
 
 
 
@@ -10,10 +11,18 @@ export default function LoginPage() {
     pageContainer.className = `page vs jc ac`;
 
     const form = CredentialForm(
-        (e, credentials) => {
+        async (e, credentials) => {
             e.preventDefault();
-            console.log(credentials);
-            // TODO - login event listener
+            const {login, password} = credentials;
+            const authenticationResult = await ServerInterface.singleton
+                .identity
+                .logInAsync({login, password});
+                
+            if (authenticationResult.success) {
+                InternalNavigation.goTo(internalPaths.dashboard);
+            } else {
+                alert(authenticationResult.message);
+            }
         },
         "Log in"
     );

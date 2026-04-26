@@ -1,6 +1,7 @@
-import { internalPaths } from "@/internal-navigation";
+import { InternalNavigation, internalPaths } from "@/internal-navigation";
 import CredentialForm from "../../components/CredentialForm";
 import InternalLink from "../../components/InternalLink";
+import { ServerInterface } from "@/app/infrastructure/server-interface";
 
 
 export default function RegisterPage() {
@@ -8,10 +9,27 @@ export default function RegisterPage() {
     pageContainer.className = `page vs jc ac`;
 
     const form = CredentialForm(
-        (e, credentials) => {
+        async (e, credentials) => {
             e.preventDefault();
-            console.log(credentials);
-            // TODO - register event listener
+            const { login, password } = credentials;
+            const registrationResult = await ServerInterface.singleton
+                .identity
+                .registerAsync({ login, password });
+
+            if (!registrationResult.success) {
+                alert(registrationResult.message);
+                return;
+            }
+
+            const authenticationResult = await ServerInterface.singleton
+                .identity
+                .logInAsync({ login, password });
+
+            if (authenticationResult.success) {
+                InternalNavigation.goTo(internalPaths.dashboard);
+            } else {
+                alert(authenticationResult.message);
+            }            
         },
         "Register"
     );

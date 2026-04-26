@@ -1,4 +1,5 @@
-import * as SignalR from "@microsoft/signalr";
+
+import type { RealtimeConnection } from "./realtime-connection";
 
 
 type CommandParams = (null | boolean | number | string | object)[];
@@ -45,10 +46,10 @@ export type CommandResultNoData
     | ExceptionCommandResult;
 
 
-export class HubClient {
-    private _connection: SignalR.HubConnection;
+export abstract class HubClient {
+    private _connection: RealtimeConnection;
 
-    constructor(connection: SignalR.HubConnection) {
+    constructor(connection: RealtimeConnection) {
         this._connection = connection;
     }
 
@@ -57,7 +58,7 @@ export class HubClient {
         command: string, ...args: CommandParams
     ): Promise<CommandResultWithData<T>> {
 
-        const result: RawCommandResult = await this._connection.invoke(dispatcher, command, ...args);
+        const result: RawCommandResult = await this._connection.invokeAsync(dispatcher, command, ...args);
         let isSuccess: boolean = false;
         if (result.status >= 200 && result.status < 300) isSuccess = true;
 
@@ -86,7 +87,7 @@ export class HubClient {
         ...args: CommandParams
     ) : Promise<CommandResultNoData> {
 
-        const result: RawCommandResult = await this._connection.invoke(dispatcher, command, ...args);
+        const result: RawCommandResult = await this._connection.invokeAsync(dispatcher, command, ...args);
         let isSuccess: boolean = false;
         if (result.status >= 200 && result.status < 300) isSuccess = true;
 

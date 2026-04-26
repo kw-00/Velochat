@@ -8,7 +8,7 @@ export type Credentials = {
     password: string;
 }
 
-export class UserClient {
+export class IdentityClient {
     async registerAsync(credentials: Credentials): Promise<ApiResponse<User>> {
         const response = await fetch(`${userEndpointUrl}/register`,  {
             method: "POST",

@@ -5,6 +5,7 @@ const navigo = new Navigo("/");
 
 
 export const internalPaths = {
+    landing: "/",
     dashboard: "/dashboard",
     login: "/login",
     register: "/register"

@@ -9,6 +9,7 @@ export default defineConfig([
 		languageOptions: { globals: globals.browser, }, 
 		rules: {
 			"@/semi": "error",
+    		//"@typescript-eslint/no-explicit-any": "off"
 		}, 
 	}
 ]);

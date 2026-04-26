@@ -9,10 +9,22 @@ import Dashboard from "./app/ui/pages/dashboard/Dashboard";
 import LoginPage from "./app/ui/pages/login/LoginPage";
 import RegisterPage from "./app/ui/pages/register/RegisterPage";
 import { InternalNavigation } from "./internal-navigation";
+import { ServerInterface } from './app/infrastructure/server-interface';
 
 const appElement = document.getElementById('app');
 if (appElement === null) throw new Error("App element not found");
 
+InternalNavigation.register("/", async () => {
+	const refreshResponse = await ServerInterface.singleton
+		.identity
+		.refreshTokenAsync();
+
+	if (refreshResponse.success) {
+		InternalNavigation.goTo("/dashboard");
+	} else {
+		InternalNavigation.goTo("/login");
+	}
+});
 
 InternalNavigation.register("/dashboard", () => {
 	appElement.replaceChildren(Dashboard());

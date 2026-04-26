@@ -1,5 +1,6 @@
-import * as SignalR from "@microsoft/signalr";
+
 import type { ChatMessage, Room, User } from "../models";
+import type { RealtimeConnection } from "./realtime-connection";
 
 
 
@@ -14,15 +15,16 @@ type ServerEventMap = {
 }
 
 export class ServerEvents {
-    private _connection: SignalR.HubConnection;
+    private _connection: RealtimeConnection;
 
-    constructor(connection: SignalR.HubConnection) {
+    constructor(connection: RealtimeConnection) {
         this._connection = connection;
     }
 
     public on<K extends keyof ServerEventMap>(
         event: K, listener: ServerEventMap[K]
     ): () => void {
+        // @ts-expect-error listener type
         this._connection.on(event, listener);
         return () => this.off(event, listener);
     }
@@ -30,6 +32,7 @@ export class ServerEvents {
     public off<K extends keyof ServerEventMap>(
         event: K, listener: ServerEventMap[K])
     : void {
+        // @ts-expect-error listener type
         this._connection.off(event, listener);
     }
 }
