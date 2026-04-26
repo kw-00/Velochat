@@ -15,6 +15,7 @@ type DataListComponentType<
     cutEnd(): void;
     reset(data: TData[]): void;
     sort(by?: ((el1: TData, el2: TData) => number)): void;
+    removeData(predicate: (el: TData) => boolean): void;
 };
 
 export default function DataListComponent<
@@ -74,6 +75,15 @@ export default function DataListComponent<
             this.replaceChildren(...children);
         });
     };
+
+    element.removeData = function (predicate: (el: TData) => boolean) {
+        const children = Array.from(this.children) as TItemElement[];
+        const toRemove = children.filter(c => predicate(c.data));
+        requestAnimationFrame(() => {
+            toRemove.forEach(c => this.removeChild(c));
+        });
+    };
+
     return element;
 }
 

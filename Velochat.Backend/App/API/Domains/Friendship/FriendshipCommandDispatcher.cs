@@ -42,5 +42,12 @@ public class FriendshipCommandDispatcher : CommandDispatcher
             await commands.DeclineAsync(session, userId);
             return CommandResult.Empty();
         });
+
+        Register("RemoveFriend", async (session, args) =>
+        {
+            var userId = args[0].MapTo<int>(); 
+            await commands.RemoveFriendAsync(session, userId);
+            return CommandResult.Empty();
+        });
     }
 }

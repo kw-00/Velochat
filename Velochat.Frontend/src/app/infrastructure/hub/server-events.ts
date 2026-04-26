@@ -5,8 +5,9 @@ import type { RealtimeConnection } from "./realtime-connection";
 
 
 type ServerEventMap = {
-    friendshipRequested: (user: User) => void;
-    friendshipAccepted: (user: User) => void;
+    friendshipRequested: (requester: User) => void;
+    friendshipAccepted: (accepter: User) => void;
+    unfriended: (formerFriend: User) => void;
     addedToRoom: (room: Room) => void;
 
     message: (message: ChatMessage) => void;
@@ -24,8 +25,9 @@ export class ServerEvents {
     public on<K extends keyof ServerEventMap>(
         event: K, listener: ServerEventMap[K]
     ): () => void {
+        const eventCapitalized = `${event[0].toUpperCase()}${event.slice(1)}`;
         // @ts-expect-error listener type
-        this._connection.on(event, listener);
+        this._connection.on(eventCapitalized, listener);
         return () => this.off(event, listener);
     }
 

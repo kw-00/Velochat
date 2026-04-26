@@ -11,8 +11,12 @@ public class UserNotificationChannels : ChannelGroup
     ) => Broadcast(session, userId, ["FriendshipRequested", requester]);
 
     public Task SendFriendshipAccepted(
-        IRealtimeSession session, int userId, CompleteUser acceptor
-    ) => Broadcast(session, userId, ["FriendshipAccepted", acceptor]);
+        IRealtimeSession session, int userId, CompleteUser accepter
+    ) => Broadcast(session, userId, ["FriendshipAccepted", accepter]);
+
+    public Task SendUnfriended(
+        IRealtimeSession session, int userId, int formerFriendId
+    ) => Broadcast(session, userId, ["Unfriended", formerFriendId]);
 
     public Task SendAddedToRoom(
         IRealtimeSession session, int roomId, CompleteRoom room

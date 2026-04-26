@@ -82,4 +82,10 @@ public class FriendshipCommands(
     {
         await friendshipRepository.DeleteAsync(session.UserId, userId);
     }
+
+    public async Task RemoveFriendAsync(IRealtimeSession session, int userId)
+    {
+        await friendshipRepository.DeleteAsync(session.UserId, userId);
+        await userNotificationChannels.SendUnfriended(session, userId, session.UserId);
+    }
 }

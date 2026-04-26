@@ -44,12 +44,20 @@ public interface IFriendshipCommands
     /// <summary>
     /// Declines a friend request.
     /// </summary>
-    /// <param name="session">
-    /// The session of the caller.
-    /// </param>
+    /// <param name="session"></param>
     /// <param name="userId">
     /// The user to be declined.
     /// </param>
     /// <returns></returns>
     Task DeclineAsync(IRealtimeSession session, int userId);
+
+    /// <summary>
+    /// Removes a friend.
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="userId">
+    /// The user to be removed.
+    /// </param>
+    /// <returns></returns>
+    Task RemoveFriendAsync(IRealtimeSession session, int userId);
 }

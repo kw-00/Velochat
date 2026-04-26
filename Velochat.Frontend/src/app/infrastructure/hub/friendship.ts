@@ -25,7 +25,7 @@ export class FriendshipHubClient extends HubClient {
     }
 
     async acceptAsync(userId: number) {
-        return await this.invokeNoContentAsync(
+        return await this.invokeAsync<User>(
             DISPATCHER_NAME, "Accept", userId
         );
     }
@@ -33,6 +33,12 @@ export class FriendshipHubClient extends HubClient {
     async declineAsync(userId: number) {
         return await this.invokeNoContentAsync(
             DISPATCHER_NAME, "Decline", userId
+        );
+    }
+
+    async removeFriendAsync(userId: number) {
+        return await this.invokeNoContentAsync(
+            DISPATCHER_NAME, "RemoveFriend", userId
         );
     }
 }
