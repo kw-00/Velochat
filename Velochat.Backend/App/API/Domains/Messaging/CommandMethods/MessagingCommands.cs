@@ -13,8 +13,8 @@ namespace Velochat.Backend.App.API.Domains.Messaging;
 
 public class MessagingCommands(
     IOptions<ChatOptions> chatOptions,
-    ChatMessageRepository chatMessageRepository,
-    RoomPresenceRepository roomPresenceRepository,
+    IChatMessageRepository chatMessageRepository,
+    IRoomPresenceRepository roomPresenceRepository,
     RoomFocusCache focusedRoomCache,
     RoomFeedChannels roomFeedChannels
 ) : IMessagingCommands

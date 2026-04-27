@@ -1,5 +1,6 @@
 using Velochat.Backend.App.Infrastructure.Persistence;
 using Velochat.Backend.App.Infrastructure.Models;
+using Velochat.Backend.App.Infrastructure.DTOs;
 
 namespace Velochat.Backend.App.Infrastructure.Persistence;
 
@@ -24,7 +25,7 @@ public interface IUserRepository
     /// A complete model of the retrieved user
     /// or null if not found.
     /// </returns>
-    Task<CompleteUser?> GetByCredentialsAsync(string login, string passwordHash);
+    Task<CompleteUserWithPasswordHash?> GetWithPasswordHashAsync(string login);
 
     /// <summary>
     /// Inserts a new user.

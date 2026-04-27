@@ -1,4 +1,5 @@
 using Npgsql;
+using Velochat.Backend.App.Infrastructure.DTOs;
 using Velochat.Backend.App.Infrastructure.Models;
 
 namespace Velochat.Backend.App.Infrastructure.Persistence;
@@ -21,22 +22,22 @@ public class UserRepository(NpgsqlDataSource dataSource) : IUserRepository
         }
         return null;
     }
-    public async Task<CompleteUser?> GetByCredentialsAsync(
-        string login, string passwordHash
+    public async Task<CompleteUserWithPasswordHash?> GetWithPasswordHashAsync(
+        string login
     )
     {
         var query = dataSource.CreateCommand(@"
-            SELECT id, login FROM users
-            WHERE login = @login AND password_hash = @passwordHash;
+            SELECT id, login, password_hash FROM users
+            WHERE login = @login;
         ");
         query.Parameters.AddWithValue("login", login);
-        query.Parameters.AddWithValue("passwordHash", passwordHash);
         await using var reader = await query.ExecuteReaderAsync();
         if (await reader.ReadAsync()) {
-            return new CompleteUser
+            return new CompleteUserWithPasswordHash
             {
                 Id = reader.GetInt32(0),
                 Login = reader.GetString(1),
+                PasswordHash = reader.GetString(2),
             };
         }
         return null;

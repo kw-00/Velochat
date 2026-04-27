@@ -37,15 +37,21 @@ public class UserOrchestration(
         EncodedTokenPair EncodedTokenPair
     )> LogInAsync(Credentials credentials)
     {
-        var hashedPassword = passwordService.HashPassword(credentials.Password);
-        var matchedUser = await userRepository
-            .GetByCredentialsAsync(credentials.Login, hashedPassword) 
-            ?? throw new UnauthorizedException(
-                "Login and password do not match any user."
-            );
+        var userWithPasswordhash = await userRepository
+            .GetWithPasswordHashAsync(credentials.Login) 
+            ?? throw new UnauthorizedException("Wrong login or password.");
 
-        var tokenPair = await GetTokenPairAsync(matchedUser.Id);
-        return (matchedUser, tokenPair);
+        if (!passwordService.Verify(credentials.Password, userWithPasswordhash.PasswordHash))
+            throw new UnauthorizedException("Wrong login or password.");
+        
+
+        var tokenPair = await GetTokenPairAsync(userWithPasswordhash.Id);
+        var user = new CompleteUser
+        {
+            Id = userWithPasswordhash.Id,
+            Login = userWithPasswordhash.Login,
+        };
+        return (user, tokenPair);
     }
 
 

@@ -7,10 +7,10 @@ using Velochat.Backend.App.Shared.Exceptions;
 namespace Velochat.Backend.App.API.Domains.Rooms;
 
 public class RoomsCommands(
-    RoomRepository roomRepository,
-    RoomPresenceRepository roomPresenceRepository,
-    FriendshipRepository friendshipRepository,
-    UserRepository userRepository,
+    IRoomRepository roomRepository,
+    IRoomPresenceRepository roomPresenceRepository,
+    IFriendshipRepository friendshipRepository,
+    IUserRepository userRepository,
     RoomFeedChannels fullRoomUpdateChannels,
     UserNotificationChannels userNotificationChannels
 ) : IRoomsCommands

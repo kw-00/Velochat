@@ -22,8 +22,8 @@ services:
     depends_on:
       - db
     environment:
-      Db__ConnectionString: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat"
-      ASPNETCORE_URLS: "http://localhost:8080"
+      Db__ConnectionString: "Host=db;Port=5432;Database=velochat;Username=velochat;Password=velochat;Search Path=app,public"
+      ASPNETCORE_URLS: "http://+:8080"
       Jwt__Secret: "6SecretSecretSecretSecretSecretSecret"
       DOTNET_ENVIRONMENT: "Development"
 

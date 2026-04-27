@@ -76,8 +76,8 @@ END;
 $$LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER trg_room_presences_delete
-ON room_presences
 AFTER DELETE
+ON room_presences
 EXECUTE FUNCTION fn_trg_room_presences_delete();
 
 /* Chat messages */

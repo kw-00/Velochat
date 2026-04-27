@@ -8,8 +8,8 @@ using Velochat.Backend.App.Shared.Exceptions;
 namespace Velochat.Backend.App.API.Domains.Friendship;
 
 public class FriendshipCommands(
-    FriendshipRepository friendshipRepository,
-    UserRepository userRepository,
+    IFriendshipRepository friendshipRepository,
+    IUserRepository userRepository,
     UserNotificationChannels userNotificationChannels
 ) : IFriendshipCommands
 {
