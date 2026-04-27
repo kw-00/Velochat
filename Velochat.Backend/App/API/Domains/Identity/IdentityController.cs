@@ -8,7 +8,7 @@ namespace Velochat.Backend.App.API.Domains.Identity;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController(IUserOrchestration userOrchestration) : ControllerBase
+public class IdentityController(IUserOrchestration userOrchestration) : ControllerBase
 {
     [HttpPost]
     [Route("register")]

@@ -11,7 +11,7 @@ public class RoomsCommands(
     RoomPresenceRepository roomPresenceRepository,
     FriendshipRepository friendshipRepository,
     UserRepository userRepository,
-    FullRoomUpdateChannels fullRoomUpdateChannels,
+    RoomFeedChannels fullRoomUpdateChannels,
     UserNotificationChannels userNotificationChannels
 ) : IRoomsCommands
 {

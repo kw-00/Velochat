@@ -26,10 +26,10 @@ public class UserOrchestration(
             PasswordHash = passwordHash
         };
 
-        var CompleteUser = await userRepository.CreateAsync(user);
+        var completeUser = await userRepository.CreateAsync(user);
 
-        var tokenPair = await GetTokenPairAsync(CompleteUser.Id);
-        return (CompleteUser, tokenPair);
+        var tokenPair = await GetTokenPairAsync(completeUser.Id);
+        return (completeUser, tokenPair);
     }
 
     public async Task<(

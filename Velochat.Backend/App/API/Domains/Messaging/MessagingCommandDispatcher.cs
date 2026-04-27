@@ -32,6 +32,19 @@ public class MessagingCommandDispatcher : CommandDispatcher
             );
         });
 
+        Register("SubscribeFeed", async (session, args) =>
+        {
+            var newestMessageOnClient = args[0].MapTo<int?>();
+            await commands.SubscribeFeedAsync(session, newestMessageOnClient);
+            return CommandResult.Empty();
+        });
+
+        Register("UnsubscribeFeed", async (session, args) =>
+        {
+            await commands.UnsubscribeFeedAsync(session);
+            return CommandResult.Empty();
+        });
+
         Register("SwitchFocus", async (session, args) =>
         {
             var toRoomId = args[0].MapTo<int>(); 

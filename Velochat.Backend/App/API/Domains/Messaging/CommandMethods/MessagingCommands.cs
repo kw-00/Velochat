@@ -16,10 +16,10 @@ public class MessagingCommands(
     ChatMessageRepository chatMessageRepository,
     RoomPresenceRepository roomPresenceRepository,
     RoomFocusCache focusedRoomCache,
-    FullRoomUpdateChannels fullRoomUpdateChannels
-)
+    RoomFeedChannels roomFeedChannels
+) : IMessagingCommands
 {
-    public async Task<CompleteChatMessage> SendMessage(
+    public async Task<CompleteChatMessage> SendMessageAsync(
         IRealtimeSession session, string content
     )
     {
@@ -38,7 +38,7 @@ public class MessagingCommands(
                 Content = content
             });
 
-            await fullRoomUpdateChannels.BroadcastMessage(session, message);
+            await roomFeedChannels.BroadcastMessage(session, message);
         }
         catch (IdentifierNotFoundException<Room> ex)
         {
@@ -52,7 +52,7 @@ public class MessagingCommands(
         return message;
     }
 
-    public async Task<GoOlderResponse> GoOlder(
+    public async Task<GoOlderResponse> GoOlderAsync(
         IRealtimeSession session,
         int oldestMessageOnClient
     )
@@ -68,7 +68,6 @@ public class MessagingCommands(
         );
 
         var topReached = messages.Count < chatOptions.Value.MessageBatchSize;
-        await UnsubscribeFromMessageFeed(session);
         return new GoOlderResponse
         {
             Messages = messages,
@@ -76,7 +75,7 @@ public class MessagingCommands(
         };
     }
 
-    public async Task<GoNewerResponse> GoNewer(
+    public async Task<GoNewerResponse> GoNewerAsync(
         IRealtimeSession session,
         int newestMessageOnClient
     ) 
@@ -92,7 +91,7 @@ public class MessagingCommands(
         );
 
         var bottomReached = messages.Count < chatOptions.Value.MessageBatchSize;
-        if (bottomReached) await SubscribeToMessageFeed(session);
+        if (bottomReached) await roomFeedChannels.Subscribe(session, roomId);
         return new GoNewerResponse
         {
             Messages = messages,
@@ -100,40 +99,62 @@ public class MessagingCommands(
         };
     }
 
-    public async Task<SwitchRoomsResponse> SwitchRooms(
-        IRealtimeSession session, int toRoomId, int? newestMessageOnClient
+    public async Task<SubscribeFeedResponse> SubscribeFeedAsync(
+        IRealtimeSession session, int? newestMessageOnClient
     )
     {
         var userId = session.UserId;
-        var currentChatroomId = focusedRoomCache
-            .TryGetFocusedRoom(session.ConnectionId);
+        var roomId = focusedRoomCache
+            .TryGetFocusedRoom(session.ConnectionId)
+            ?? throw new NotFoundException(
+                "Client must focus on a room before subscribing to messages."
+            );
 
-        if (currentChatroomId is not null)
-        {
-            await UnsubscribeFromMessageFeed(session);
-        }
+        await EnsureRoomPresenceAsync(roomId, userId);
+        focusedRoomCache.SetFocus(session.ConnectionId, roomId);
+        await roomFeedChannels.Subscribe(session, roomId);
 
-        await EnsureRoomPresenceAsync(toRoomId, userId);
-        focusedRoomCache.SetFocus(session.ConnectionId, toRoomId);
-        await SubscribeToMessageFeed(session);
         var missedMessages = await chatMessageRepository.GetNewestByRoomIdAsync(
-            toRoomId,
+            roomId,
             newestMessageOnClient ?? -1,
             chatOptions.Value.MessageBatchSize
         );
 
         var IsContinuity = missedMessages.Count < chatOptions.Value.MessageBatchSize;
         
-        return new SwitchRoomsResponse
+        return new SubscribeFeedResponse
         {
             Messages = missedMessages,
             IsContinuity = IsContinuity
         };
     }
 
-    public async Task ZoneOut(IRealtimeSession session)
+    public async Task UnsubscribeFeedAsync(IRealtimeSession session)
     {
-        await UnsubscribeFromMessageFeed(session);
+        var focusedRoomId = focusedRoomCache.TryGetFocusedRoom(session.ConnectionId);
+        if (focusedRoomId is null) return;
+        await roomFeedChannels.Unsubscribe(session, focusedRoomId.Value);
+    }
+
+    public async Task<SubscribeFeedResponse> SwitchFocusAsync(
+        IRealtimeSession session, int toRoomId, int? newestMessageOnClient
+    )
+    {
+        var userId = session.UserId;
+        var currentRoomId = focusedRoomCache
+            .TryGetFocusedRoom(session.ConnectionId);
+
+        if (currentRoomId is not null)
+        {
+            await UnsubscribeFeedAsync(session);
+        }
+        focusedRoomCache.SetFocus(session.ConnectionId, toRoomId);
+        return await SubscribeFeedAsync(session, newestMessageOnClient);
+    }
+
+    public async Task ZoneOutAsync(IRealtimeSession session)
+    {
+        await UnsubscribeFeedAsync(session);
         focusedRoomCache.ClearFocus(session.ConnectionId);
     }
 
@@ -145,18 +166,5 @@ public class MessagingCommands(
             UserId = userId
         })
         ?? throw new ForbiddenException("Client is not in the room.");
-    }
-
-    private async Task SubscribeToMessageFeed(IRealtimeSession session)
-    {
-        var focusedRoomId = focusedRoomCache.GetFocusedRoom(session.ConnectionId);
-        await fullRoomUpdateChannels.Subscribe(session, focusedRoomId);
-    }
-
-    private async Task UnsubscribeFromMessageFeed(IRealtimeSession session)
-    {
-        var focusedRoomId = focusedRoomCache.TryGetFocusedRoom(session.ConnectionId);
-        if (focusedRoomId is null) return;
-        await fullRoomUpdateChannels.Unsubscribe(session, focusedRoomId.Value);
     }
 }

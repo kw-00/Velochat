@@ -26,17 +26,6 @@ public interface IMessagingCommands
     /// the oldest available message available has been retrieved.
     /// </para>
     /// 
-    /// <para>
-    /// It also unsubscribes the client from the
-    /// room's message feed.
-    /// </para>
-    /// 
-    /// <para>
-    /// Think of a user scrolling up to view chat history. They no longer
-    /// need to see new messages in real time, since they are viewing
-    /// older messages and won't see the new ones anyway.
-    /// </para>
-    /// 
     /// Hence the unsubscribing.
     /// </summary>
     /// <param name="session"></param>
@@ -73,9 +62,8 @@ public interface IMessagingCommands
     Task<GoNewerResponse> GoNewerAsync(IRealtimeSession session, int newestMessageOnClient);
 
     /// <summary>
-    /// 
-    /// Switches the client's focus to a different room.
-    /// Then gives the client an update on any missed messages in the new room.
+    /// Subscribes the client to the room's feed.
+    /// Gives the client an update on any missed messages in the currently focused room.
     /// 
     /// <para>
     /// The update is in the form of a DTO. The client may have missed messages 
@@ -94,6 +82,33 @@ public interface IMessagingCommands
     /// 
     /// </summary>
     /// <param name="session"></param>
+    /// <param name="newestMessageOnClient">
+    /// The ID of the newest message on client. 
+    /// No messages older than that one will be returned.
+    /// </param>
+    /// <returns>
+    /// A DTO containing missed messages for the newly focused room
+    /// and a flag that signifies whether all missed messages have been returned.
+    /// </returns>
+    Task<SubscribeFeedResponse> SubscribeFeedAsync(
+        IRealtimeSession session, int? newestMessageOnClient
+    );
+
+    /// <summary>
+    /// Unsubscribes the client from the currently selected room's message feed.
+    /// </summary>
+    /// <param name="session"></param>
+    /// <returns></returns>
+    Task UnsubscribeFeedAsync(IRealtimeSession session);
+
+    /// <summary>
+    /// Switches the client's focus to a different room.
+    /// Subscribes to the room's feed and gives 
+    /// the client an update on any missed messages.
+    /// Check <see cref="SubscribeFeedAsync(IRealtimeSession, int?)"/>
+    /// for for details.
+    /// </summary>
+    /// <param name="session"></param>
     /// <param name="roomId">The ID of the room to switch to.</param>
     /// <param name="newestMessageOnClient">
     /// The ID of the newest message on client. 
@@ -103,12 +118,12 @@ public interface IMessagingCommands
     /// A DTO containing missed messages for the newly focused room
     /// and a flag that signifies whether all missed messages have been returned.
     /// </returns>
-    Task<SwitchRoomsResponse> SwitchFocusAsync(
+    Task<SubscribeFeedResponse> SwitchFocusAsync(
         IRealtimeSession session, int roomId, int? newestMessageOnClient
     );
 
     /// <summary>
-    /// Unsubscribes the client from the currently selected room's message feed
+    /// Unsubscribes the client from the currently selected room's feed
     /// and clears the client's current room cache.
     /// </summary>
     /// <param name="session"></param>

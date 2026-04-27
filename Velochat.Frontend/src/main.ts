@@ -20,13 +20,13 @@ InternalNavigation.register("/", async () => {
 		.refreshTokenAsync();
 
 	if (refreshResponse.success) {
-		InternalNavigation.goTo("/dashboard");
+		InternalNavigation.goTo("/chat");
 	} else {
 		InternalNavigation.goTo("/login");
 	}
 });
 
-InternalNavigation.register("/dashboard", () => {
+InternalNavigation.register("/chat", () => {
 	appElement.replaceChildren(Dashboard());
 });
 

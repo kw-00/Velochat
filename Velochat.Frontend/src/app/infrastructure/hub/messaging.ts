@@ -14,7 +14,7 @@ export type GoOlderResponse = {
     topReached: boolean;
 }
 
-export type SwitchRoomsResponse = {
+export type FeedUpdate = {
     messages: ChatMessage[];
     isContinuity: boolean;
 }
@@ -41,8 +41,20 @@ export class MessagingHubClient extends HubClient {
         );
     }
 
+    async subscribeFeedAsync(newestMessageOnClient: number | null) {
+        return await this.invokeAsync<FeedUpdate>(
+            DISPATCHER_NAME, "SubscribeFeed", newestMessageOnClient
+        );
+    }
+
+    async unsubscribeFeedAsync() {
+        return await this.invokeNoContentAsync(
+            DISPATCHER_NAME, "UnsubscribeFeed"
+        );
+    }
+
     async switchFocusAsync(roomId: number, newestMessageOnClient: number | null) {
-        return await this.invokeAsync<SwitchRoomsResponse>(
+        return await this.invokeAsync<FeedUpdate>(
             DISPATCHER_NAME, "SwitchFocus", roomId, newestMessageOnClient
         );
     }

@@ -1,4 +1,4 @@
-import { MessagingHubClient } from "./hub/messaging";
+import { MessagingHubClient, type FeedUpdate } from "./hub/messaging";
 import type { RealtimeConnection } from "./hub/realtime-connection";
 import type { ServerEvents } from "./hub/server-events";
 import type { ChatMessage } from "./models";
@@ -48,7 +48,10 @@ export class MessageManager {
                 this._currentRoomMessages.append(m);
             })
         );
-        realtimeConnection.onreconnected(() => this._reconcileWithServerAsync());
+        realtimeConnection.onconnected(() => {
+            if (this._selection === null) return;
+            this.subscribeFeedAsync();
+        });
     }
 
     on<K extends keyof MessageManagerEventMap>(
@@ -94,33 +97,38 @@ export class MessageManager {
         this._currentRoomMessages.overwrite(newerMessages, "start");
     }
 
+    async subscribeFeedAsync() {
+        const newestCachedMessageId = this._getNewestCachedMessageId();
+        const subscribeFeedResult = await this._messagingClient
+            .subscribeFeedAsync(newestCachedMessageId);
+
+        if (!subscribeFeedResult.success) 
+            throw new Error(subscribeFeedResult.message);
+
+        this._reconcileCache(subscribeFeedResult.data);
+    }
+
+    async unsubscribeFeedAsync() {
+        const unsubscribeFeedResult = await this._messagingClient.unsubscribeFeedAsync();
+        if (!unsubscribeFeedResult.success) 
+            throw new Error(unsubscribeFeedResult.message);
+    }
+
     async switchAsync(roomId: number) {
-        this._cacheCurrentMessages();
+        this._cacheMessages();
         this._selection = roomId;
 
-        const cached = this._getOrInitCache(roomId);
-        const newestCachedMessageId 
-            = cached.length > 0
-                ? cached[cached.length - 1].id
-                : null;
+        const newestCachedMessageId = this._getNewestCachedMessageId();
+        const switchResult = await this._messagingClient
+            .switchFocusAsync(roomId, newestCachedMessageId);
 
-
-        const switchResult = await this._messagingClient.switchFocusAsync(roomId, newestCachedMessageId);
         if (!switchResult.success) throw new Error(switchResult.message);
-
-        let reconciledMessageData;
-        if (switchResult.data.isContinuity) {
-            reconciledMessageData = [...cached, ...switchResult.data.messages];
-        } else {
-            reconciledMessageData = switchResult.data.messages;
-        }
-        this._currentRoomMessages.overwrite(reconciledMessageData, "start");
-        this._rooms.set(roomId, reconciledMessageData);
+        this._reconcileCache(switchResult.data);
     }
 
     async zoneOutAsync() {
         await this._messagingClient.zoneOutAsync();
-        this._cacheCurrentMessages();
+        this._cacheMessages();
         this._selection = null;
         this._currentRoomMessages.overwrite([], "start");
     }
@@ -146,17 +154,37 @@ export class MessageManager {
         this._disposeListeners.add(callback);
     }
 
-    private _reconcileWithServerAsync() {
-        if (this._selection === null) return;
-        this.switchAsync(this._selection);
-    }
-
-    private _cacheCurrentMessages() {
+    private _cacheMessages() {
         if (this._selection === null) return;
         if (this._currentRoomMessages.data.length === 0) {
             this._rooms.delete(this._selection);
         }
         this._rooms.set(this._selection, this._currentRoomMessages.data);
+    }
+
+    private _getNewestCachedMessageId() {
+        const selection = this._selection;
+        if (selection === null) throw new Error(
+            "Cannot get newest message. No room selected."
+        );
+        const cached = this._getOrInitCache(selection);
+        return cached.length > 0 ? cached[cached.length - 1].id : null;
+    }
+
+    private _reconcileCache(feedUpdate: FeedUpdate) {
+        const selection = this._selection;
+        if (selection === null) throw new Error(
+            "Cannot reconcile cache. No room selected."
+        );
+        const cached = this._getOrInitCache(selection);
+        let reconciledMessageData;
+        if (feedUpdate.isContinuity) {
+            reconciledMessageData = [...cached, ...feedUpdate.messages];
+        } else {
+            reconciledMessageData = feedUpdate.messages;
+        }
+        this._currentRoomMessages.overwrite(reconciledMessageData, "start");
+        this._rooms.set(selection, reconciledMessageData);
     }
 
     private _getOrInitCache(roomId: number) {

@@ -1,7 +1,7 @@
 import type { User } from "../models";
 import { getApiResponse, type ApiResponse } from "./response";
 
-const userEndpointUrl = `${import.meta.env.BACKEND_URL}`;
+const userEndpointUrl = "http://localhost:5000/identity";//`${import.meta.env.BACKEND_URL}`;
 
 export type Credentials = {
     login: string;

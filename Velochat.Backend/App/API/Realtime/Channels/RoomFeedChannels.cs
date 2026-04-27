@@ -5,7 +5,7 @@ using Velochat.Backend.App.Infrastructure.Models;
 
 namespace Velochat.Backend.App.API.Realtime.Channels;
 
-public class FullRoomUpdateChannels : ChannelGroup
+public class RoomFeedChannels : ChannelGroup
 {
     public Task BroadcastMessage(
         IRealtimeSession session, CompleteChatMessage message
