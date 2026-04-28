@@ -4,6 +4,9 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Velochat.Backend.App.Infrastructure.DTOs;
+using Velochat.Backend.App.Infrastructure.Models;
+using Velochat.Backend.App.Infrastructure.Persistence;
+using Velochat.Backend.App.Shared.Exceptions;
 using Velochat.Backend.App.Shared.Options;
 
 namespace Velochat.Backend.App.Infrastructure.Services;
@@ -14,14 +17,17 @@ public class AuthTokenService : IAuthTokenService
     private readonly JwtSecurityTokenHandler _accessTokenHandler = new();
     private readonly JwtSecurityTokenHandler _refreshTokenHandler = new();
 
-    public AuthTokenService(IOptions<JwtOptions> jwtOptions)
+    private readonly IRefreshTokenStateRepository _refreshTokenStateRepository;
+
+    public AuthTokenService(IOptions<JwtOptions> jwtOptions, IRefreshTokenStateRepository refreshTokenStateRepository)
     {
         _jwtOptions = jwtOptions.Value;
         _accessTokenHandler.TokenLifetimeInMinutes = (int)_jwtOptions.AccessTokenLifetimeMinutes;
         _refreshTokenHandler.TokenLifetimeInMinutes = (int)(_jwtOptions.RefreshTokenLifetimeHours * 60);
+        _refreshTokenStateRepository = refreshTokenStateRepository;
     }
 
-    public TokenPair GenerateTokenPair(int userId)
+    public async Task<EncodedTokenPair> GenerateTokenPairAsync(int userId)
     {
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
@@ -32,28 +38,63 @@ public class AuthTokenService : IAuthTokenService
             )
         };
 
-        return new TokenPair
+        var tokenPair = new TokenPair
         {
             AccessToken = _accessTokenHandler.CreateJwtSecurityToken(securityTokenDescriptor),
             RefreshToken = _refreshTokenHandler.CreateJwtSecurityToken(securityTokenDescriptor)
         };
+        var encodedPair = EncodeTokenPair(tokenPair);
+
+        try
+        {
+            await _refreshTokenStateRepository.CreateAsync(new Models.RefreshTokenState
+            {
+                Token = encodedPair.RefreshToken,
+                UserId = userId
+            });
+            return encodedPair;
+        }
+        catch (IdentifierNotFoundException<User> ex)
+        {
+            throw new NotFoundException(ex.Message);
+        }
     }
 
-    public EncodedTokenPair EncodeTokenPair(TokenPair tokenPair) => new() 
+    public async Task<JwtSecurityToken> VerifyAccessTokenAsync(string tokenString)
+    {
+        return await ParseTokenAsync(_accessTokenHandler, tokenString);
+    }
+
+    public async Task<JwtSecurityToken> VerifyRefreshTokenAsync(string tokenString) 
+    {
+        var decodedToken = await ParseTokenAsync(_refreshTokenHandler, tokenString);
+        var userId = decodedToken.GetUserId();
+
+        var refreshTokenState = await _refreshTokenStateRepository.GetByTokenAsync(tokenString)
+            ?? throw new UnauthorizedException("Invalid refresh token.");
+        if (refreshTokenState.Status == RefreshTokenState.Revoked) 
+            throw new UnauthorizedException("Refresh token has been revoked.");
+        if (refreshTokenState.Status == RefreshTokenState.Used)
+        {
+            await _refreshTokenStateRepository.RevokeByUserIdAsync(userId);
+            throw new UnauthorizedException(
+                "Refresh token has been used. Revoking all tokens for user."
+            );
+        }
+        if (refreshTokenState.Status == RefreshTokenState.Active) return decodedToken;
+        throw new UnauthorizedException("Refresh token status is not valid.");
+    }
+
+    public async Task RevokeRefreshTokenAsync(string tokenString)
+    {
+        await _refreshTokenStateRepository.RevokeAsync(tokenString);
+    }
+
+    private EncodedTokenPair EncodeTokenPair(TokenPair tokenPair) => new() 
     {
         AccessToken = EncodeAccessToken(tokenPair.AccessToken),
         RefreshToken = EncodeRefreshToken(tokenPair.RefreshToken)
     };
-
-    public async Task<JwtSecurityToken> ParseAccessTokenAsync(string tokenString)
-    {
-        return await ParseToken(_accessTokenHandler, tokenString);
-    }
-
-    public async Task<JwtSecurityToken> ParseRefreshTokenAsync(string tokenString) 
-    {
-        return await ParseToken(_refreshTokenHandler,tokenString);
-    }
 
     private string EncodeAccessToken(JwtSecurityToken token)
     {
@@ -66,7 +107,7 @@ public class AuthTokenService : IAuthTokenService
     }
 
 
-    private static async Task<JwtSecurityToken> ParseToken(JwtSecurityTokenHandler handler, string tokenString)
+    private async Task<JwtSecurityToken> ParseTokenAsync(JwtSecurityTokenHandler handler, string tokenString)
     {
         var validation = new TokenValidationParameters
         {
@@ -74,14 +115,11 @@ public class AuthTokenService : IAuthTokenService
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(new string('x', 128))),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
         };
         
         var validationResult = await handler.ValidateTokenAsync(tokenString, validation);
         if (!validationResult.IsValid) throw validationResult.Exception;
-        Console.WriteLine("Claims:");
-        foreach (var key in validationResult.Claims.Keys) Console.WriteLine($"{key}: {validationResult.Claims[key]}");
-        _ = validationResult.ClaimsIdentity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
         return (JwtSecurityToken) validationResult.SecurityToken;
     }
 }

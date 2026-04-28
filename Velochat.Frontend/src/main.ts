@@ -26,8 +26,8 @@ InternalNavigation.register("/", async () => {
 	}
 });
 
-InternalNavigation.register("/chat", () => {
-	appElement.replaceChildren(Dashboard());
+InternalNavigation.register("/chat", async () => {
+	appElement.replaceChildren(await Dashboard());
 });
 
 InternalNavigation.register("/login", () => {

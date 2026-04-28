@@ -42,9 +42,16 @@ public class RefreshTokenStateRepository(NpgsqlDataSource dataSource) : IRefresh
             await query.ExecuteNonQueryAsync();
         }
         catch (PostgresException ex)
-        when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            throw new DuplicatePrimaryKeyException<RefreshTokenState>(refreshTokenState);
+            if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+            {
+                throw new DuplicatePrimaryKeyException<RefreshTokenState>(refreshTokenState);
+            }
+            if (ex.SqlState == PostgresErrorCodes.ForeignKeyViolation)
+            {
+                throw new IdentifierNotFoundException<User>("user", refreshTokenState.UserId);
+            }
+            throw;
         }
     }
 

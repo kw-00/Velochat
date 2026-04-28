@@ -9,6 +9,7 @@ using Velochat.Backend.App.API.Realtime.Session;
 
 namespace Velochat.Backend.App.API.Realtime;
 
+[Authorize]
 public sealed class GlobalHub(
     MessagingCommandDispatcher messagingCommandDispatcher,
     FriendshipCommandDispatcher friendshipCommandDispatcher,
@@ -21,17 +22,14 @@ public sealed class GlobalHub(
 
     private IRealtimeSession Session => new SignalRRealtimeSession(this);
 
-    [Authorize]
     public async Task<CommandResult> Messaging(string command, params object[] args)
         => await messagingCommandDispatcher.ExecuteAsync(Session, command, args);
 
 
-    [Authorize]
     public async Task<CommandResult> Friendship(string command, params object[] args)
         => await friendshipCommandDispatcher.ExecuteAsync(Session, command, args);
     
 
-    [Authorize]
     public async Task<CommandResult> Rooms(string command, params object[] args)
         => await roomsCommandDispatcher.ExecuteAsync(Session, command, args);
 

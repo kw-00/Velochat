@@ -3,19 +3,13 @@ using Velochat.Backend.App.Infrastructure.Models;
 
 namespace Velochat.Backend.App.API.Domains.Identity;
 
-public interface IUserOrchestration
+public interface IIdentityOrchestration
 {
-    Task<(
-        CompleteUser User, 
-        EncodedTokenPair EncodedTokenPair
-    )> RegisterAsync(Credentials credentials);
+    Task<SessionInitData> RegisterAsync(Credentials credentials);
 
-    Task<(
-        CompleteUser User, 
-        EncodedTokenPair EncodedTokenPair
-    )> LogInAsync(Credentials credentials);
+    Task<SessionInitData> LogInAsync(Credentials credentials);
 
-    Task<EncodedTokenPair> RefreshTokenAsync(string refreshTokenString);
+    Task<SessionInitData> RefreshSessionAsync(string refreshTokenString);
 
     Task LogOutAsync(string refreshTokenString);
 

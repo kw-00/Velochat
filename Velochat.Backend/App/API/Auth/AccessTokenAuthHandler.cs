@@ -1,4 +1,5 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
@@ -23,12 +24,25 @@ public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationScheme
     }
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var accessTokenString = Context.Request.Cookies["accessToken"];
+        Context.Request.Cookies.TryGetValue("accessToken", out var accessTokenString);
         if (accessTokenString is null) return AuthenticateResult.NoResult();
 
         try
         { 
-            var accessToken = await _authTokenService.ParseAccessTokenAsync(accessTokenString);
+            JwtSecurityToken accessToken;
+            try
+            {
+                accessToken = await _authTokenService.VerifyAccessTokenAsync(accessTokenString);
+            } 
+            catch (Exception e)
+            {
+                Context.Request.Cookies.TryGetValue("refreshToken", out var refreshTokenString);
+                if (refreshTokenString is null) return AuthenticateResult.Fail(e);
+                var refreshToken = await _authTokenService.VerifyRefreshTokenAsync(refreshTokenString);
+                var userId = refreshToken.GetUserId();
+                var tokenPair = await _authTokenService.GenerateTokenPairAsync(userId);
+                accessToken = await _authTokenService.VerifyAccessTokenAsync(tokenPair.AccessToken);
+            }
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(
                 new ClaimsIdentity(

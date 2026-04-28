@@ -8,14 +8,15 @@ type DataListComponentType<
     TElement extends HTMLElement
 
 > = TElement & {
-    capacity: number;
+    data: TData[];
     appendData(...data: TData[]): void;
     prependData(...data: TData[]): void;
-    cutStart(): void;
-    cutEnd(): void;
+    cutStart(count: number): TData[];
+    cutEnd(count: number): TData[];
     reset(data: TData[]): void;
     sort(by?: ((el1: TData, el2: TData) => number)): void;
-    removeData(predicate: (el: TData) => boolean): void;
+    map(mapper: (el: TData) => TData): void;
+    removeData(predicate: (el: TData) => boolean): TData[];
 };
 
 export default function DataListComponent<
@@ -25,12 +26,23 @@ export default function DataListComponent<
 >(
     tag: TTag,
     elementFactory: (data: TData) => TItemElement,
-    capacity: number
 ) {
     const element = document
         .createElement(tag) as DataListComponentType<TData, HTMLElementTagNameMap[TTag]>;
 
-    element.capacity = capacity;
+    Object.defineProperty(element, "data", {
+        get: function () {
+            const children = Array.from(this.children);
+            return children
+                .filter(c => {
+                    return (
+                        c instanceof HTMLElement
+                        && (c as DataComponentType<TData, TItemElement>).data !== undefined
+                    );
+                })
+                .map(c => (c as DataComponentType<TData, TItemElement>).data);
+        },
+    });
 
     element.appendData = function (...data: TData[]) {
         const frag = document.createDocumentFragment();
@@ -42,23 +54,27 @@ export default function DataListComponent<
         data.forEach(d => frag.append(elementFactory(d)));
         this.prepend(frag);
     };
-    element.cutStart = function () : void {
+    element.cutStart = function (count: number) {
         const children = Array.from(this.children) as TItemElement[];
-        if (children.length > this.capacity) {
-            const toRemove = children.slice(0, children.length - this.capacity);
+        if (children.length > count) {
+            const toRemove = children.slice(0, children.length - count);
             requestAnimationFrame(() => {
                 toRemove.forEach(c => this.removeChild(c));
             });
+            return toRemove.map(c => c.data);
         }
+        return [];
     };
-    element.cutEnd = function () : void {
+    element.cutEnd = function (count: number) {
         const children = Array.from(this.children) as TItemElement[];
-        if (children.length > this.capacity) {
-            const toRemove = children.slice(this.capacity);
+        if (children.length > count) {
+            const toRemove = children.slice(count);
             requestAnimationFrame(() => {
                 toRemove.forEach(c => this.removeChild(c));
             });
+            return toRemove.map(c => c.data);
         }
+        return [];
     };
 
     element.reset = function (data: TData[]) {
@@ -76,12 +92,22 @@ export default function DataListComponent<
         });
     };
 
+    element.map = function (mapper: (el: TData) => TData) {
+        const children = Array.from(this.children) as TItemElement[];
+        const mapped = children.map(c => mapper(c.data));
+        requestAnimationFrame(() => {
+            this.replaceChildren(...mapped.map(elementFactory));
+        });
+        return mapped;
+    };
+
     element.removeData = function (predicate: (el: TData) => boolean) {
         const children = Array.from(this.children) as TItemElement[];
         const toRemove = children.filter(c => predicate(c.data));
         requestAnimationFrame(() => {
             toRemove.forEach(c => this.removeChild(c));
         });
+        return toRemove.map(c => c.data);
     };
 
     return element;

@@ -80,11 +80,11 @@ export class RoomManager {
         this._disposedListeners.forEach(listener => listener());
     }
 
-    _onDisposed(listener: () => void) {
+    private _onDisposed(listener: () => void) {
         this._disposedListeners.add(listener);
     }
 
-    _fire<K extends keyof RoomManagerEventMap>(
+    private _fire<K extends keyof RoomManagerEventMap>(
         event: K, ...args: Parameters<RoomManagerEventMap[K]>
     ): void {
         // @ts-expect-error spread args into listener

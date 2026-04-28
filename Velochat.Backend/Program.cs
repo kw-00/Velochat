@@ -48,7 +48,7 @@ builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 // Orchestration
-builder.Services.AddScoped<IUserOrchestration, UserOrchestration>();
+builder.Services.AddScoped<IIdentityOrchestration, IdentityOrchestration>();
 
 // RPC channels
 builder.Services.AddSingleton<RoomFeedChannels>();

@@ -6,18 +6,14 @@ using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.API.Domains.Identity;
 
-public class UserOrchestration(
+public class IdentityOrchestration(
     IUserRepository userRepository,
-    IRefreshTokenStateRepository refreshTokenStateRepository,
     IPasswordService passwordService,
     IAuthTokenService authTokenService
-) : IUserOrchestration
+) : IIdentityOrchestration
 {
 
-    public async Task<(
-        CompleteUser User, 
-        EncodedTokenPair EncodedTokenPair
-    )> RegisterAsync(Credentials credentials)
+    public async Task<SessionInitData> RegisterAsync(Credentials credentials)
     {
         var passwordHash = passwordService.HashPassword(credentials.Password);
         var user = new User
@@ -28,14 +24,15 @@ public class UserOrchestration(
 
         var completeUser = await userRepository.CreateAsync(user);
 
-        var tokenPair = await GetTokenPairAsync(completeUser.Id);
-        return (completeUser, tokenPair);
+        var tokenPair = await authTokenService.GenerateTokenPairAsync(completeUser.Id);
+        return new SessionInitData
+        {
+            User = completeUser,
+            TokenPair = tokenPair
+        };
     }
 
-    public async Task<(
-        CompleteUser User, 
-        EncodedTokenPair EncodedTokenPair
-    )> LogInAsync(Credentials credentials)
+    public async Task<SessionInitData> LogInAsync(Credentials credentials)
     {
         var userWithPasswordhash = await userRepository
             .GetWithPasswordHashAsync(credentials.Login) 
@@ -45,60 +42,39 @@ public class UserOrchestration(
             throw new UnauthorizedException("Wrong login or password.");
         
 
-        var tokenPair = await GetTokenPairAsync(userWithPasswordhash.Id);
+        var tokenPair = await authTokenService.GenerateTokenPairAsync(userWithPasswordhash.Id);
         var user = new CompleteUser
         {
             Id = userWithPasswordhash.Id,
             Login = userWithPasswordhash.Login,
         };
-        return (user, tokenPair);
+        return new SessionInitData
+        {
+            User = user,
+            TokenPair = tokenPair
+        };
     }
 
-
-    public async Task<EncodedTokenPair> RefreshTokenAsync(string refreshTokenString)
+    public async Task<SessionInitData> RefreshSessionAsync(string refreshTokenString)
     {
-        var userId = await CheckAndHandleRefreshTokenStatus(refreshTokenString);
-        return await GetTokenPairAsync(userId);
+        var refreshToken = await authTokenService.VerifyRefreshTokenAsync(refreshTokenString);
+        var userId = refreshToken.GetUserId();
+        var tokenPair = await authTokenService.GenerateTokenPairAsync(userId);
+        var user = await userRepository.GetByIdAsync(userId)
+            ?? throw new RaceConditionException(
+                "User disappeared from database as token was being generated."
+            );
+        return new SessionInitData
+        {
+            User = user,
+            TokenPair = tokenPair
+        };
     }
+
 
     public async Task LogOutAsync(string refreshTokenString)
     {
-        await CheckAndHandleRefreshTokenStatus(refreshTokenString);
-        await refreshTokenStateRepository.RevokeAsync(refreshTokenString);
-    }
-
-    private async Task<EncodedTokenPair> GetTokenPairAsync(int userId)
-    {
-        var tokens = authTokenService.GenerateTokenPair(userId);
-        return authTokenService.EncodeTokenPair(tokens);
-    }
-
-    private async Task<int> CheckAndHandleRefreshTokenStatus(string refreshTokenString)
-    {
-        try {
-            var refreshToken = await authTokenService.ParseRefreshTokenAsync(
-                refreshTokenString
-            );
-            var userId = int.Parse(refreshToken.Subject);
-            var refreshTokenState = await refreshTokenStateRepository
-                .GetByTokenAsync(refreshTokenString)
-                ?? throw new UnauthorizedException("Invalid refresh token.");
-
-            if (refreshTokenState.Status == RefreshTokenState.Revoked) 
-                throw new UnauthorizedException("Refresh token has been revoked.");
-            if (refreshTokenState.Status == RefreshTokenState.Used)
-            {
-                await refreshTokenStateRepository.RevokeByUserIdAsync(userId);
-                throw new UnauthorizedException(
-                    "Refresh token has been used. Revoking all tokens for user."
-                );
-            }
-            if (refreshTokenState.Status == RefreshTokenState.Active) return userId;
-            throw new UnauthorizedException("Refresh token status is not valid.");
-        }
-        catch (Exception ex)
-        {
-            throw new UnauthorizedException($"Invalid refresh token. {ex.Message}");
-        }
+        await authTokenService.VerifyRefreshTokenAsync(refreshTokenString);
+        await authTokenService.RevokeRefreshTokenAsync(refreshTokenString);
     }
 }

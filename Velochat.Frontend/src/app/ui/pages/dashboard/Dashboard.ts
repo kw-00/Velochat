@@ -1,10 +1,17 @@
+import { ServerInterface } from "@/app/infrastructure/server-interface";
+import RoomsSection from "./RoomsSection/RoomsSection";
 
 
 
 
-export default function Dashboard() {
+export default async function Dashboard() {
     const mainPanel = document.createElement("div");
     mainPanel.className = `page hs`;
     
-    return mainPanel;
+    ServerInterface.singleton.startRealtimeSessionAsync();
+    return (
+        mainPanel.appendAndGet(
+            RoomsSection()
+        )
+    );
 }

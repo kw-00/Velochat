@@ -20,6 +20,12 @@ public interface IRefreshTokenStateRepository
     /// </param>
     /// <returns></returns>
     /// <exception cref="ModelNotInsertableException"></exception>
+    /// <exception cref="DuplicatePrimaryKeyException{RefreshTokenState}">
+    /// When the refresh token already has a registered state.
+    /// </exception>
+    /// <exception cref="IdentifierNotFoundException{User}">
+    /// When user ID does not exist.
+    /// </exception>"
     Task CreateAsync(RefreshTokenState refreshTokenState);
 
     /// <summary>

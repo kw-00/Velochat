@@ -8,15 +8,15 @@ namespace Velochat.Backend.App.API.Domains.Identity;
 
 [ApiController]
 [Route("[controller]")]
-public class IdentityController(IUserOrchestration userOrchestration) : ControllerBase
+public class IdentityController(IIdentityOrchestration identityOrchestration) : ControllerBase
 {
     [HttpPost]
     [Route("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] Credentials credentials)
     {
-        var result = await userOrchestration.RegisterAsync(credentials);
+        var result = await identityOrchestration.RegisterAsync(credentials);
 
-        SetJwtCookies(result.EncodedTokenPair);
+        SetJwtCookies(result.TokenPair);
         return Ok(result.User);
     }
 
@@ -24,22 +24,21 @@ public class IdentityController(IUserOrchestration userOrchestration) : Controll
     [Route("login")]
     public async Task<IActionResult> LogInAsync([FromBody] Credentials credentials)
     {
-        var result = await userOrchestration.LogInAsync(credentials);
+        var result = await identityOrchestration.LogInAsync(credentials);
         
-        SetJwtCookies(result.EncodedTokenPair);
+        SetJwtCookies(result.TokenPair);
         return Ok(result.User);
     }
 
     [HttpGet]
-    [Route("refresh-token")]
-    public async Task<IActionResult> RefreshTokenAsync()
+    [Route("refresh-session")]
+    public async Task<IActionResult> RefreshSessionAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"] 
             ?? throw new UnauthorizedException("Refresh token not found.");
-
-        var tokenPair = await userOrchestration.RefreshTokenAsync(refreshToken);
-        SetJwtCookies(tokenPair);
-        return Ok();
+        var result = await identityOrchestration.RefreshSessionAsync(refreshToken);
+        SetJwtCookies(result.TokenPair);
+        return Ok(result.User);
     }
 
     [HttpGet]
@@ -48,7 +47,7 @@ public class IdentityController(IUserOrchestration userOrchestration) : Controll
     {
         var refreshToken = Request.Cookies["refreshToken"] 
             ?? throw new UnauthorizedException("Refresh token not found.");
-        await userOrchestration.LogOutAsync(refreshToken);
+        await identityOrchestration.LogOutAsync(refreshToken);
         return Ok();
     }
 

@@ -1,14 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Velochat.Backend.App.Infrastructure.DTOs;
+using Velochat.Backend.App.Shared.Exceptions;
 
 namespace Velochat.Backend.App.Infrastructure.Services;
 
 public interface IAuthTokenService
 {
-    TokenPair GenerateTokenPair(int userId);
+    Task<EncodedTokenPair> GenerateTokenPairAsync(int userId);
 
-    EncodedTokenPair EncodeTokenPair(TokenPair tokenPair);
+    Task<JwtSecurityToken> VerifyAccessTokenAsync(string tokenString);
+    Task<JwtSecurityToken> VerifyRefreshTokenAsync(string tokenString);
 
-    Task<JwtSecurityToken> ParseAccessTokenAsync(string tokenString);
-    Task<JwtSecurityToken> ParseRefreshTokenAsync(string tokenString);
+    Task RevokeRefreshTokenAsync(string tokenString);
 }

@@ -12,7 +12,7 @@ import { RoomManager } from "./room-manager";
 
 
 
-
+const serverUrl = "http://localhost:5000";
 
 
 export class ServerInterface {
@@ -20,7 +20,7 @@ export class ServerInterface {
 
     readonly connection = new RealtimeConnection(
         new SignalR.HubConnectionBuilder()
-            .withUrl(`${import.meta.env.BASE_URL}/hub`)
+            .withUrl(`${serverUrl}/hub`)
             .build()
     );
 
@@ -29,7 +29,7 @@ export class ServerInterface {
     private _roomsHubClient = new RoomsHubClient(this.connection);
     private _messagingHubClient = new MessagingHubClient(this.connection);
 
-    readonly auth = new IdentityClient();
+    readonly auth = new IdentityClient(serverUrl);
     readonly friendship = new FriendshipManager(
         this.connection, 
         this._serverEvents, 
@@ -47,7 +47,14 @@ export class ServerInterface {
     );
 
     async startRealtimeSessionAsync() {
-        await this.connection.startAsync();
+        try {
+            await this.connection.startAsync();
+        } catch (err) {
+            if (err instanceof Error && err.message.includes("401")) {
+                await this.auth.refreshTokenAsync();
+                await this.connection.startAsync();
+            }
+        }
     }
 
     async stopRealtimeSessionAsync() {
