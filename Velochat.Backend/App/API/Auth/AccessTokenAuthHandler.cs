@@ -42,6 +42,7 @@ public class AccessTokenAuthHandler : AuthenticationHandler<AuthenticationScheme
                 var userId = refreshToken.GetUserId();
                 var tokenPair = await _authTokenService.GenerateTokenPairAsync(userId);
                 accessToken = await _authTokenService.VerifyAccessTokenAsync(tokenPair.AccessToken);
+                TokenCookies.SetTokens(Context.Response, tokenPair);
             }
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(

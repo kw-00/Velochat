@@ -17,7 +17,7 @@ if (appElement === null) throw new Error("App element not found");
 InternalNavigation.register("/", async () => {
 	const refreshResponse = await ServerInterface.singleton
 		.auth
-		.refreshTokenAsync();
+		.refreshSessionAsync();
 
 	if (refreshResponse.success) {
 		InternalNavigation.goTo("/chat");

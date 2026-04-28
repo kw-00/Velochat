@@ -3,7 +3,7 @@ import { FriendshipHubClient } from "./hub/friendship";
 import { MessagingHubClient } from "./hub/messaging";
 import { RoomsHubClient } from "./hub/rooms";
 import { ServerEvents } from "./hub/server-events";
-import { IdentityClient } from "./rest/identity-client";
+import { AuthClient } from "./rest/auth-client";
 import { RealtimeConnection } from "./hub/realtime-connection";
 import { FriendshipManager } from "./friendship-manager";
 import { MessageManager } from "./message-manager";
@@ -29,7 +29,7 @@ export class ServerInterface {
     private _roomsHubClient = new RoomsHubClient(this.connection);
     private _messagingHubClient = new MessagingHubClient(this.connection);
 
-    readonly auth = new IdentityClient(serverUrl);
+    readonly auth = new AuthClient(serverUrl);
     readonly friendship = new FriendshipManager(
         this.connection, 
         this._serverEvents, 
@@ -51,7 +51,7 @@ export class ServerInterface {
             await this.connection.startAsync();
         } catch (err) {
             if (err instanceof Error && err.message.includes("401")) {
-                await this.auth.refreshTokenAsync();
+                await this.auth.refreshSessionAsync();
                 await this.connection.startAsync();
             }
         }

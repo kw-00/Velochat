@@ -6,10 +6,10 @@ export type Credentials = {
     password: string;
 }
 
-export class IdentityClient {
+export class AuthClient {
     baseUrl: string;
     constructor(serverUrl: string) {
-        this.baseUrl = `${serverUrl}/identity`;
+        this.baseUrl = `${serverUrl}/auth`;
     } 
     async registerAsync(credentials: Credentials): Promise<ApiResponse<User>> {
         const response = await fetch(`${this.baseUrl}/register`,  {
@@ -35,8 +35,8 @@ export class IdentityClient {
 
         return getApiResponse(response);
     }
-    async refreshTokenAsync(): Promise<ApiResponse<void>> {
-        const response = await fetch(`${this.baseUrl}/refresh-token`,  {
+    async refreshSessionAsync(): Promise<ApiResponse<User>> {
+        const response = await fetch(`${this.baseUrl}/refresh-session`,  {
             method: "GET",
             headers: {
                 "Accept": "application/json"

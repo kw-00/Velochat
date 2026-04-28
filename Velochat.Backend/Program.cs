@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Velochat.Backend.App.API.Auth;
 using Velochat.Backend.App.API.Domains.Friendship;
-using Velochat.Backend.App.API.Domains.Identity;
+using Velochat.Backend.App.API.Auth;
 using Velochat.Backend.App.API.Domains.Messaging;
 using Velochat.Backend.App.API.Domains.Rooms;
 using Velochat.Backend.App.API.Realtime;
@@ -48,7 +48,7 @@ builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 // Orchestration
-builder.Services.AddScoped<IIdentityOrchestration, IdentityOrchestration>();
+builder.Services.AddScoped<IAuthOrchestration, AuthOrchestration>();
 
 // RPC channels
 builder.Services.AddSingleton<RoomFeedChannels>();

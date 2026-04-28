@@ -1,9 +1,9 @@
 using Velochat.Backend.App.Infrastructure.DTOs;
 using Velochat.Backend.App.Infrastructure.Models;
 
-namespace Velochat.Backend.App.API.Domains.Identity;
+namespace Velochat.Backend.App.API.Auth;
 
-public interface IIdentityOrchestration
+public interface IAuthOrchestration
 {
     Task<SessionInitData> RegisterAsync(Credentials credentials);
 

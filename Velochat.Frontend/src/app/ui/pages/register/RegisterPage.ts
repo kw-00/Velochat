@@ -20,16 +20,7 @@ export default function RegisterPage() {
                 alert(registrationResult.message);
                 return;
             }
-
-            const authenticationResult = await ServerInterface.singleton
-                .auth
-                .logInAsync({ login, password });
-
-            if (authenticationResult.success) {
-                InternalNavigation.goTo(internalPaths.chat);
-            } else {
-                alert(authenticationResult.message);
-            }            
+            InternalNavigation.goTo(internalPaths.chat);         
         },
         "Register"
     );

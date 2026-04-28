@@ -1,7 +1,7 @@
 using Velochat.Backend.App.Infrastructure.DTOs;
 using Velochat.Backend.App.Infrastructure.Models;
 
-namespace Velochat.Backend.App.API.Domains.Identity;
+namespace Velochat.Backend.App.API.Auth;
 
 public class SessionInitData
 {

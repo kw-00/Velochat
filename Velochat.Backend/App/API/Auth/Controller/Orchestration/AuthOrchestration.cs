@@ -4,13 +4,13 @@ using Velochat.Backend.App.Infrastructure.Services;
 using Velochat.Backend.App.Infrastructure.Models;
 using Velochat.Backend.App.Shared.Exceptions;
 
-namespace Velochat.Backend.App.API.Domains.Identity;
+namespace Velochat.Backend.App.API.Auth;
 
-public class IdentityOrchestration(
+public class AuthOrchestration(
     IUserRepository userRepository,
     IPasswordService passwordService,
     IAuthTokenService authTokenService
-) : IIdentityOrchestration
+) : IAuthOrchestration
 {
 
     public async Task<SessionInitData> RegisterAsync(Credentials credentials)

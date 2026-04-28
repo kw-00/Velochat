@@ -50,7 +50,8 @@ public class AuthTokenService : IAuthTokenService
             await _refreshTokenStateRepository.CreateAsync(new Models.RefreshTokenState
             {
                 Token = encodedPair.RefreshToken,
-                UserId = userId
+                UserId = userId,
+                Status = RefreshTokenState.Active
             });
             return encodedPair;
         }
